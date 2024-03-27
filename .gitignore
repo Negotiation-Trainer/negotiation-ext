@@ -837,3 +837,7 @@ sysinfo.txt
 # Additional files built by Visual Studio
 
 # End of https://www.toptal.com/developers/gitignore/api/csharp,dotnetcore,unity,visualstudio,visualstudiocode,jetbrains,jetbrains+all
+
+
+.DS_store
+*/.DS_store
