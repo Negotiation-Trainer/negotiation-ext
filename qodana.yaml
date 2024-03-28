@@ -17,26 +17,26 @@ dotnet:
 
 
 #Enable inspections
-# include:
-#   - name: UnusedMember.Global
-#   - name: ConvertToPrimaryConstructor
-#   - name: UnusedType.Global
-#   - name: AutoPropertyCanBeMadeGetOnly.Local
-#   - name: FieldCanBeMadeReadOnly.Local
-#   - name: ClassNeverInstantiated.Global
-#   - name: ArrangeThisQualifier
-#   - name: SuggestVarOrType_BuiltInTypes
-#   - name: AutoPropertyCanBeMadeGetOnly.Global
-#   - name: EventNeverSubscribedTo.Global
-#   - name: MemberCanBePrivate.Global
-#   - name: ParameterTypeCanBeEnumerable.Global
-#   - name: RedundantIfElseBlock
-#   - name: UnusedMemberInSuper.Global
-#   - name: ArrangeRedundantParentheses
-#   - name: SuggestVarOrType_Elsewhere
-#   - name: SuggestVarOrType_SimpleTypes
-#   - name: ArrangeNamespaceBody
-#   - name: ArrangeTrailingCommaInMultilineLists
+include:
+  - name: UnusedMember.Global
+  - name: ConvertToPrimaryConstructor
+  - name: UnusedType.Global
+  - name: AutoPropertyCanBeMadeGetOnly.Local
+  - name: FieldCanBeMadeReadOnly.Local
+  - name: ClassNeverInstantiated.Global
+  - name: ArrangeThisQualifier
+  - name: SuggestVarOrType_BuiltInTypes
+  - name: AutoPropertyCanBeMadeGetOnly.Global
+  - name: EventNeverSubscribedTo.Global
+  - name: MemberCanBePrivate.Global
+  - name: ParameterTypeCanBeEnumerable.Global
+  - name: RedundantIfElseBlock
+  - name: UnusedMemberInSuper.Global
+  - name: ArrangeRedundantParentheses
+  - name: SuggestVarOrType_Elsewhere
+  - name: SuggestVarOrType_SimpleTypes
+  - name: ArrangeNamespaceBody
+  - name: ArrangeTrailingCommaInMultilineLists
 #Disable inspections
 #exclude:
 #  - name: <SomeDisabledInspectionId>
