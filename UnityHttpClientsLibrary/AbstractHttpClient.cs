@@ -6,23 +6,43 @@ using Object = UnityEngine.Object;
 
 namespace UnityHttpClients
 {
+    /// <summary>
+    /// Abstract base class for HTTP clients.
+    /// </summary>
     public class AbstractHttpClient
     {
         private readonly string _baseUrl;
+        
         /// <summary>
-        /// Create new AbstractHttpClient Instance
+        /// Initializes a new instance of the <see cref="AbstractHttpClient"/> class.
         /// </summary>
-        /// <param name="baseUrl">Base URL of the API</param>
+        /// <param name="baseUrl">The base URL of the API. Do not include a trailing slash.</param>
         protected AbstractHttpClient(string baseUrl)
         {
+            // remove trailing slash
+            if (baseUrl.EndsWith("/"))
+            {
+                baseUrl = baseUrl.Substring(0, baseUrl.Length - 1);
+            }
+            
             _baseUrl = baseUrl;
         }
 
+        /// <summary>
+        /// Tests the GET method.
+        /// </summary>
+        /// <returns>A string response from the GET request.</returns>
         public string TestGetMethod()
         {
             return Get("https://catfact.ninja/fact", new Dictionary<string, string>());
         }
         
+        /// <summary>
+        /// Executes a GET request to an API endpoint.
+        /// </summary>
+        /// <param name="pathUrl">The path to the API endpoint, e.g., /chat.</param>
+        /// <param name="headers">The headers for the request, like auth headers, etc.</param>
+        /// <returns>A string response from the GET request.</returns>
         protected string Get(string pathUrl, Dictionary<string, string> headers)
         {
             UnityWebRequest request = UnityWebRequest.Get($"{_baseUrl}/{pathUrl}");
@@ -57,12 +77,26 @@ namespace UnityHttpClients
             return resultText;
         }
         
-        protected string Post(string pathUrl, Dictionary<string, string> headers, Object body)
+        /// <summary>
+        /// Executes a POST request to an API endpoint.
+        /// </summary>
+        /// <typeparam name="T">The type of the body object.</typeparam>
+        /// <param name="pathUrl">The path to the API endpoint, e.g., /chat.</param>
+        /// <param name="headers">The headers for the request, like auth headers, etc.</param>
+        /// <param name="body">The body of the POST request.</param>
+        /// <returns>A string response from the POST request.</returns>
+        protected string Post<T>(string pathUrl, Dictionary<string, string> headers, T body)
         {
             UnityWebRequest request = new UnityWebRequest($"{_baseUrl}/{pathUrl}", "POST");
-            byte[] bodyRaw = Encoding.UTF8.GetBytes(JsonUtility.ToJson(body));
-            request.uploadHandler = new UploadHandlerRaw(bodyRaw);
-            request.downloadHandler = new DownloadHandlerBuffer();
+
+            // Add the body to the request when it is not null
+            if (body != null)
+            {
+                byte[] bodyRaw = Encoding.UTF8.GetBytes(JsonUtility.ToJson(body));
+                request.uploadHandler = new UploadHandlerRaw(bodyRaw);
+                request.downloadHandler = new DownloadHandlerBuffer();
+            }
+            
             request.SetRequestHeader("Content-Type", "application/json");
             foreach (KeyValuePair<string, string> header in headers)
             {
