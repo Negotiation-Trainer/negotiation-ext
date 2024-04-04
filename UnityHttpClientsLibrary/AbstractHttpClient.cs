@@ -8,15 +8,25 @@ namespace UnityHttpClients
 {
     public class AbstractHttpClient
     {
+        private readonly string _baseUrl;
+        /// <summary>
+        /// Create new AbstractHttpClient Instance
+        /// </summary>
+        /// <param name="baseUrl">Base URL of the API</param>
+        protected AbstractHttpClient(string baseUrl)
+        {
+            _baseUrl = baseUrl;
+        }
 
         public string TestGetMethod()
         {
             return Get("https://catfact.ninja/fact", new Dictionary<string, string>());
         }
         
-        private string Get(string url, Dictionary<string, string> headers)
+        protected string Get(string pathUrl, Dictionary<string, string> headers)
         {
-            UnityWebRequest request = UnityWebRequest.Get(url);
+            UnityWebRequest request = UnityWebRequest.Get($"{_baseUrl}/{pathUrl}");
+            
             foreach (KeyValuePair<string, string> header in headers)
             {
                 request.SetRequestHeader(header.Key, header.Value);
@@ -47,9 +57,9 @@ namespace UnityHttpClients
             return resultText;
         }
         
-        private string Post(string url, Dictionary<string, string> headers, Object body)
+        protected string Post(string pathUrl, Dictionary<string, string> headers, Object body)
         {
-            UnityWebRequest request = new UnityWebRequest(url, "POST");
+            UnityWebRequest request = new UnityWebRequest($"{_baseUrl}/{pathUrl}", "POST");
             byte[] bodyRaw = Encoding.UTF8.GetBytes(JsonUtility.ToJson(body));
             request.uploadHandler = new UploadHandlerRaw(bodyRaw);
             request.downloadHandler = new DownloadHandlerBuffer();
