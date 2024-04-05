@@ -16,7 +16,6 @@ dotnet:
   solution: NegotiationTrainerExt.sln
 
 
-#Enable inspections
 include:
   - name: UnusedMember.Global
   - name: ConvertToPrimaryConstructor
@@ -37,6 +36,9 @@ include:
   - name: SuggestVarOrType_SimpleTypes
   - name: ArrangeNamespaceBody
   - name: ArrangeTrailingCommaInMultilineLists
+  - name: ConvertToConstant.Local
+  - name: ReplaceSubstringWithRangeIndexer
+
 #Disable inspections
 #exclude:
 #  - name: <SomeDisabledInspectionId>
