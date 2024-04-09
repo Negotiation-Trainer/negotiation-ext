@@ -8,8 +8,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModelLibrary", "ModelLibrar
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServiceLibraryTest", "ServiceLibraryTest\ServiceLibraryTest.csproj", "{BDB6D599-20EE-4A49-B632-595D39DA1D94}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnityHttpClientsLibraryTest", "UnityHttpClientsLibraryTest\UnityHttpClientsLibraryTest.csproj", "{5A056D3B-79FA-475F-B95D-A56362F22FF0}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModelLibraryTest", "ModelLibraryTest\ModelLibraryTest.csproj", "{97F6FD95-564E-4743-8CAF-FEF31EAD2A9B}"
 EndProject
 Global
@@ -34,10 +32,6 @@ Global
 		{BDB6D599-20EE-4A49-B632-595D39DA1D94}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BDB6D599-20EE-4A49-B632-595D39DA1D94}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BDB6D599-20EE-4A49-B632-595D39DA1D94}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5A056D3B-79FA-475F-B95D-A56362F22FF0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5A056D3B-79FA-475F-B95D-A56362F22FF0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5A056D3B-79FA-475F-B95D-A56362F22FF0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5A056D3B-79FA-475F-B95D-A56362F22FF0}.Release|Any CPU.Build.0 = Release|Any CPU
 		{97F6FD95-564E-4743-8CAF-FEF31EAD2A9B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{97F6FD95-564E-4743-8CAF-FEF31EAD2A9B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{97F6FD95-564E-4743-8CAF-FEF31EAD2A9B}.Release|Any CPU.ActiveCfg = Release|Any CPU
