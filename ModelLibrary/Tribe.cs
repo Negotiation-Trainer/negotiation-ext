@@ -1,6 +1,7 @@
 using System.Collections.Generic;
+using Enums;
 
-namespace ModelLibrary
+namespace Models
 {
     public class Tribe
     {

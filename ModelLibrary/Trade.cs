@@ -1,5 +1,6 @@
+using Enums;
 
-namespace ModelLibrary
+namespace Models
 {
     public class Trade
     {

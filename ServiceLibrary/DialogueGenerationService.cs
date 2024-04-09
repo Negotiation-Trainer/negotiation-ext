@@ -1,4 +1,4 @@
-using ModelLibrary;
+using Models;
 
 namespace ServiceLibrary
 {

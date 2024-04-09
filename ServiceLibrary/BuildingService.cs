@@ -1,5 +1,6 @@
 ﻿using System;
-using ModelLibrary;
+using Enums;
+using Models;
 
 namespace ServiceLibrary
 {

@@ -1,7 +1,8 @@
 using System;
 using System.Collections.Generic;
+using Enums;
 
-namespace ModelLibrary
+namespace Models
 {
     public class Inventory
     {
@@ -33,6 +34,11 @@ namespace ModelLibrary
             if(_inventory[item] == 0) return;
             _inventory[item] -= amount;
             InventoryUpdate?.Invoke(this, EventArgs.Empty);
+        }
+
+        public void UpdateInventory()
+        {
+            InventoryUpdate?.Invoke(this,EventArgs.Empty);
         }
 
         public new string ToString()

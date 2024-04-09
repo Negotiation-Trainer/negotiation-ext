@@ -18,4 +18,8 @@
         <Using Include="NUnit.Framework"/>
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\ServiceLibrary\ServiceLibrary.csproj" />
+    </ItemGroup>
+
 </Project>

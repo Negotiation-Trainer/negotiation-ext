@@ -1,5 +1,5 @@
 using System;
-using ModelLibrary;
+using Models;
 
 namespace ServiceLibrary.Algorithm
 {

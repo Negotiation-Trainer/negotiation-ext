@@ -1,4 +1,4 @@
-namespace ModelLibrary
+namespace Models
 {
     public class InstructionMessage : IMessage
     {
