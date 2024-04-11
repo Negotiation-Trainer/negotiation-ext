@@ -36,7 +36,7 @@ namespace ServiceLibrary
             bool selfBuildDecision = _selfBuild.Calculate(trade, targetCpu);
             bool buildEffectDecision = _buildEffect.Calculate(trade, targetCpu, originator);
             bool usefulnessDecision = _usefulness.Calculate(trade, targetCpu);
-            bool tradeBalanceDecision = _tradeBalance.Calculate(trade);
+            bool tradeBalanceDecision = _tradeBalance.Calculate(trade, targetCpu, originator);
             
             //Randomise Decisions
             selfBuildDecision = _randomness.Calculate(_selfBuildRandomChance) ? selfBuildDecision : !selfBuildDecision;
