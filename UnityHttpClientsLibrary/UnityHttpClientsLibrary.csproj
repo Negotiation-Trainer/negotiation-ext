@@ -14,7 +14,7 @@
         <Reference Include="System.Core"/>
         <Reference Include="System.Xml"/>
         <Reference Include="UnityEngine">
-            <HintPath>/Applications/Unity/Hub/Editor/2022.3.20f1/Unity.app/Contents/Managed/UnityEngine.dll</HintPath>
+            <HintPath>../Resources/UnityEngine.dll</HintPath>
         </Reference>
     </ItemGroup>
     <ItemGroup>
