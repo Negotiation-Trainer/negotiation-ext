@@ -9,12 +9,15 @@ namespace Models
         public string Name { get; private set; }
         public int Points { get; set; }
         public Dictionary<(InventoryItems, Tribe), int> PointTable { get; set; }
-        
+        public Dictionary<Tribe, int> GoodWill { get; set; }
+
         public Tribe(string name)
         {
             Name = name;
             Points = 0;
             Inventory = new Inventory();
+            PointTable = new Dictionary<(InventoryItems, Tribe), int>();
+            GoodWill = new Dictionary<Tribe, int>();
         }
     }
 }
