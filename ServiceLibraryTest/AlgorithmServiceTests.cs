@@ -158,10 +158,13 @@ namespace Tests
         {
             //Given
             TradeBalance tradeBalance = new TradeBalance();
+            Tribe originator = new Tribe("originator");
+            Tribe target = new Tribe("target");
             Trade trade = new Trade(InventoryItems.Wood,1,InventoryItems.Stone,2);
             
+            
             //When
-            var result = tradeBalance.Calculate(trade);
+            var result = tradeBalance.Calculate(trade,target,originator);
             
             //Then
             Assert.IsTrue(result);
@@ -172,10 +175,12 @@ namespace Tests
         {
             //Given
             TradeBalance tradeBalance = new TradeBalance();
+            Tribe originator = new Tribe("originator");
+            Tribe target = new Tribe("target");
             Trade trade = new Trade(InventoryItems.Wood,1,InventoryItems.Stone,1);
             
             //When
-            var result = tradeBalance.Calculate(trade);
+            var result = tradeBalance.Calculate(trade,target,originator);
             
             //Then
             Assert.IsTrue(result);
@@ -186,13 +191,53 @@ namespace Tests
         {
             //Given
             TradeBalance tradeBalance = new TradeBalance();
+            Tribe originator = new Tribe("originator");
+            Tribe target = new Tribe("target");
             Trade trade = new Trade(InventoryItems.Wood,2,InventoryItems.Stone,1);
             
             //When
-            var result = tradeBalance.Calculate(trade);
+            var result = tradeBalance.Calculate(trade, target, originator);
             
             //Then
             Assert.IsFalse(result);
+        }
+        
+        [Test]
+        public void CalculateTradeBalance_IsFavorable_ReturnsTrueGetGoodWill()
+        {
+            //Given
+            TradeBalance tradeBalance = new TradeBalance();
+            Tribe originator = new Tribe("originator");
+            Tribe target = new Tribe("target");
+            Trade trade = new Trade(InventoryItems.Wood,1,InventoryItems.Stone,2);
+            
+            
+            //When
+            var result = tradeBalance.Calculate(trade,target,originator);
+            var goodWill = target.GoodWill[originator];
+            
+            //Then
+            Assert.IsTrue(result);
+            Assert.That(goodWill, Is.EqualTo(1));
+        }
+        
+        [Test]
+        public void CalculateTradeBalance_IsUnfavorableButHasGoodWill_ReturnsTrue()
+        {
+            //Given
+            TradeBalance tradeBalance = new TradeBalance();
+            Tribe originator = new Tribe("originator");
+            Tribe target = new Tribe("target");
+            Trade trade = new Trade(InventoryItems.Wood,2,InventoryItems.Stone,1);
+            
+            //When
+            target.GoodWill[originator] = 1;
+            var result = tradeBalance.Calculate(trade, target, originator);
+            var goodWill = target.GoodWill[originator];
+            
+            //Then
+            Assert.IsTrue(result);
+            Assert.That(goodWill, Is.EqualTo(0));
         }
     }
 }
