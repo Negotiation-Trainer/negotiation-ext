@@ -30,7 +30,7 @@ namespace ServiceLibraryTest
             tribe.Inventory.AddToInventory(InventoryItems.Gold, 10);
 
             //when
-            var result = buildingService.CheckIfBuildingPossible(tribe);
+            InventoryItems? result = buildingService.CheckIfBuildingPossible(tribe);
 
             //Then
             Assert.That(result, Is.EqualTo(InventoryItems.Gold));
