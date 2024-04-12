@@ -9,7 +9,7 @@ namespace UnityHttpClients
     /// <summary>
     /// Abstract base class for HTTP clients.
     /// </summary>
-    public class AbstractHttpClient
+    public abstract class AbstractHttpClient
     {
         private readonly string _baseUrl;
         
