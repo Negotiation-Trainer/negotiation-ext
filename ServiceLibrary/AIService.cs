@@ -6,7 +6,7 @@ namespace ServiceLibrary;
 
 public class AIService(string baseUrl, string sessionToken)
 {
-    private BackOfficeHttpClient _backOfficeHttpClient = new(baseUrl, sessionToken);
+    private readonly BackOfficeHttpClient _backOfficeHttpClient = new(baseUrl, sessionToken);
 
     /// <summary>
     /// Accepts a proposed trade deal and generates a response message.
@@ -17,7 +17,7 @@ public class AIService(string baseUrl, string sessionToken)
     /// <returns>A string response message.</returns>
     public string AcceptDeal(string speakerStyle, Trade tradeData, string reasonToDecline)
     {
-        string prompt = $"accept this trade and speak {speakerStyle} to this deal: {tradeData.RequestedAmount} {tradeData.RequestedItem} for {tradeData.OfferedAmount} {tradeData.OfferedItem}. in max 3 sentences. It’s good because {reasonToDecline}";
+        var prompt = $"accept this trade and speak {speakerStyle} to this deal: {tradeData.RequestedAmount} {tradeData.RequestedItem} for {tradeData.OfferedAmount} {tradeData.OfferedItem}. in max 3 sentences. It’s good because {reasonToDecline}";
         return _backOfficeHttpClient.Chat(prompt, new Dictionary<string, string>());
     }
     
@@ -31,7 +31,7 @@ public class AIService(string baseUrl, string sessionToken)
     public string RejectDeal(string speakerStyle, Trade tradeData, string reasonToDecline)
     {
         
-        string prompt = $"reject this trade and speak {speakerStyle} to this deal: {tradeData.RequestedAmount} {tradeData.RequestedItem} for {tradeData.OfferedAmount} {tradeData.OfferedItem}. in max 3 sentences. It’s bad because {reasonToDecline}";
+        var prompt = $"reject this trade and speak {speakerStyle} to this deal: {tradeData.RequestedAmount} {tradeData.RequestedItem} for {tradeData.OfferedAmount} {tradeData.OfferedItem}. in max 3 sentences. It’s bad because {reasonToDecline}";
         return _backOfficeHttpClient.Chat(prompt, new Dictionary<string, string>());
     }
 }
