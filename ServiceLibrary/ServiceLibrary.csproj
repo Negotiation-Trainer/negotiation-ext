@@ -8,6 +8,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\ModelLibrary\ModelLibrary.csproj" />
+      <ProjectReference Include="..\UnityHttpClientsLibrary\UnityHttpClientsLibrary.csproj" />
     </ItemGroup>
 
 </Project>
