@@ -1,12 +1,11 @@
 using System;
 using System.Collections.Generic;
-using Enums;
 
-namespace Models
+namespace ModelLibrary
 {
     public class Inventory
     {
-        public event EventHandler InventoryUpdate;
+        public event EventHandler? InventoryUpdate;
         private readonly Dictionary<InventoryItems, int> _inventory = new();
 
 
