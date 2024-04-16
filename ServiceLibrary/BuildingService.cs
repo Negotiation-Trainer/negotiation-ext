@@ -1,6 +1,5 @@
 ﻿using System;
-using Enums;
-using Models;
+using ModelLibrary;
 
 namespace ServiceLibrary
 {
@@ -31,7 +30,14 @@ namespace ServiceLibrary
         {
             foreach (var tribe in tribes)
             {
-                tribe.Points += tribe.PointTable[(resource, builder)];
+                if (tribe.PointTable != null)
+                {
+                    tribe.Points += tribe.PointTable[(resource, builder)];
+                }
+                else
+                {
+                    
+                }
             }
         }
     }

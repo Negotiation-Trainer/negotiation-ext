@@ -1,4 +1,6 @@
-namespace Models
+using ModelLibrary.Interfaces;
+
+namespace ModelLibrary
 {
     public class DialogueMessage : IMessage
     {

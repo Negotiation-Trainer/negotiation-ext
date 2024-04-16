@@ -1,6 +1,5 @@
 using System.Collections.Generic;
-using Enums;
-using Models;
+using ModelLibrary;
 using ServiceLibrary;
 
 namespace ServiceLibraryTest

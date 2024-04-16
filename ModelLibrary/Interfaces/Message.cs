@@ -1,4 +1,4 @@
-namespace Models
+namespace ModelLibrary.Interfaces
 {
     public interface IMessage
     {

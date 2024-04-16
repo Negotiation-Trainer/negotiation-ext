@@ -1,21 +1,11 @@
-using Enums;
-
-namespace Models
+namespace ModelLibrary
 {
-    public class Trade
+    public class Trade(InventoryItems requestedItem, int requestedAmount, InventoryItems offeredItem, int offeredAmount)
     {
-        public InventoryItems RequestedItem { get; private set; }
-        public int RequestedAmount { get; private set; }
-        
-        public InventoryItems OfferedItem { get; private set; }
-        public int OfferedAmount { get; private set; }
+        public InventoryItems RequestedItem { get; private set; } = requestedItem;
+        public int RequestedAmount { get; private set; } = requestedAmount;
 
-        public Trade(InventoryItems requestedItem, int requestedAmount, InventoryItems offeredItem, int offeredAmount)
-        {
-            this.RequestedItem = requestedItem;
-            this.RequestedAmount = requestedAmount;
-            this.OfferedItem = offeredItem;
-            this.OfferedAmount = offeredAmount;
-        }
+        public InventoryItems OfferedItem { get; private set; } = offeredItem;
+        public int OfferedAmount { get; private set; } = offeredAmount;
     }
 }

@@ -1,4 +1,4 @@
-namespace Enums
+namespace ModelLibrary
 {
     public enum InventoryItems
     {
