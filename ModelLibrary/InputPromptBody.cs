@@ -2,5 +2,5 @@ namespace ModelLibrary;
 
 public class InputPromptBody(string userInputString)
 {
-    string _userInputString = userInputString;
+    private string _userInputString = userInputString;
 }
