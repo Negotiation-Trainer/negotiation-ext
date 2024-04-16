@@ -1,6 +1,6 @@
 namespace ModelLibrary;
 
-public class InputPromptBody(string prompt)
+public class InputPromptBody(string userInputString)
 {
-    string _prompt = prompt;
+    string _userInputString = userInputString;
 }
