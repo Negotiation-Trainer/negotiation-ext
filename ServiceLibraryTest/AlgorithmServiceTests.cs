@@ -216,7 +216,7 @@ namespace ServiceLibraryTest
             Tribe target = new Tribe("target");
             originator.GoodWill = new Dictionary<Tribe, int>() { [target] = 0 };
             target.GoodWill = new Dictionary<Tribe, int>() { [originator] = 0 };
-            Trade trade = new Trade(InventoryItems.Wood,1,InventoryItems.Stone,2);
+            Trade trade = new Trade(InventoryItems.Wood,1,InventoryItems.Stone,2, target.Name, originator.Name);
             
             
             //When
@@ -237,7 +237,7 @@ namespace ServiceLibraryTest
             Tribe target = new Tribe("target");
             originator.GoodWill = new Dictionary<Tribe, int>() { [target] = 0 };
             target.GoodWill = new Dictionary<Tribe, int>() { [originator] = 0 };
-            Trade trade = new Trade(InventoryItems.Wood,2,InventoryItems.Stone,1);
+            Trade trade = new Trade(InventoryItems.Wood,2,InventoryItems.Stone,1, target.Name, originator.Name);
             
             //When
             target.GoodWill[originator] = 1;
