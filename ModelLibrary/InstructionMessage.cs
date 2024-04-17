@@ -1,3 +1,5 @@
+using ModelLibrary.Interfaces;
+
 namespace ModelLibrary
 {
     public class InstructionMessage : IMessage

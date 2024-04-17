@@ -20,7 +20,7 @@ namespace ServiceLibrary.Algorithm
         ///</returns>
         public bool Calculate(Trade trade, Tribe target, Tribe originator)
         {
-            var points = target.PointTable[(trade.RequestedItem, originator)];
+            var points = target.PointTable?[(trade.RequestedItem, originator)];
             return points switch
             {
                 5 => true,

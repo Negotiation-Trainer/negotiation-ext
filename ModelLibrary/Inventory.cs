@@ -5,7 +5,7 @@ namespace ModelLibrary
 {
     public class Inventory
     {
-        public event EventHandler InventoryUpdate;
+        public event EventHandler? InventoryUpdate;
         private readonly Dictionary<InventoryItems, int> _inventory = new();
 
 
@@ -33,6 +33,11 @@ namespace ModelLibrary
             if(_inventory[item] == 0) return;
             _inventory[item] -= amount;
             InventoryUpdate?.Invoke(this, EventArgs.Empty);
+        }
+
+        public void UpdateInventory()
+        {
+            InventoryUpdate?.Invoke(this,EventArgs.Empty);
         }
 
         public new string ToString()
