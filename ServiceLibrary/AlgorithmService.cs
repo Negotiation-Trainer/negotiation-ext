@@ -32,19 +32,61 @@ namespace ServiceLibrary
 
         public bool Decide(Trade trade,Tribe originator, Tribe targetCpu)
         {
+            var algoArgs = new AlgorithmDecisionEventArgs();
+            int startGoodwill = targetCpu.GoodWill[originator];
+            
             //Original Decisions
             bool selfBuildDecision = _selfBuild.Calculate(trade, targetCpu);
             bool buildEffectDecision = _buildEffect.Calculate(trade, targetCpu, originator);
             bool usefulnessDecision = _usefulness.Calculate(trade, targetCpu);
-            bool tradeBalanceDecision = _tradeBalance.Calculate(trade);
+            bool tradeBalanceDecision = _tradeBalance.Calculate(trade, targetCpu, originator);
+
+            algoArgs.SelfBuild = selfBuildDecision;
+            algoArgs.BuildEffect = buildEffectDecision;
+            algoArgs.Usefulness = usefulnessDecision;
+            algoArgs.TradeBalance = tradeBalanceDecision;
+            algoArgs.StartGoodwill = startGoodwill;
             
             //Randomise Decisions
-            selfBuildDecision = _randomness.Calculate(_selfBuildRandomChance) ? selfBuildDecision : !selfBuildDecision;
-            buildEffectDecision = _randomness.Calculate(_buildEffectRandomChance) ? buildEffectDecision : !buildEffectDecision;
-            usefulnessDecision = _randomness.Calculate(_usefulnessRandomChance) ? usefulnessDecision : !usefulnessDecision;
-            tradeBalanceDecision = _randomness.Calculate(_tradeBalanceRandomChance) ? tradeBalanceDecision : !tradeBalanceDecision;
+            selfBuildDecision = _randomness.Calculate(_selfBuildRandomChance) ? !selfBuildDecision : selfBuildDecision;
+            buildEffectDecision = _randomness.Calculate(_buildEffectRandomChance) ? !buildEffectDecision : buildEffectDecision;
+            usefulnessDecision = _randomness.Calculate(_usefulnessRandomChance) ? !usefulnessDecision : usefulnessDecision;
+            tradeBalanceDecision = _randomness.Calculate(_tradeBalanceRandomChance) ? !tradeBalanceDecision : tradeBalanceDecision;
             
-            return selfBuildDecision && buildEffectDecision && usefulnessDecision && tradeBalanceDecision;
+            algoArgs.RndSelfBuild = selfBuildDecision;
+            algoArgs.RndBuildEffect = buildEffectDecision;
+            algoArgs.RndUsefulness = usefulnessDecision;
+            algoArgs.RndTradeBalance = tradeBalanceDecision;
+            algoArgs.EndGoodWill = targetCpu.GoodWill[originator];
+            
+            AlgorithmDecision?.Invoke(this, algoArgs);
+
+            if (selfBuildDecision && buildEffectDecision && usefulnessDecision && tradeBalanceDecision)
+            {
+                return true;
+            }
+
+            targetCpu.GoodWill[originator] = startGoodwill;
+            return false;
         }
+        
+        //fire event with all decisions of the algorithm to be able to debug in unity
+        public class AlgorithmDecisionEventArgs : EventArgs
+        {
+            public bool SelfBuild;
+            public bool BuildEffect;
+            public bool Usefulness;
+            public bool TradeBalance;
+            
+            public bool RndSelfBuild;
+            public bool RndBuildEffect;
+            public bool RndUsefulness;
+            public bool RndTradeBalance;
+
+            public int StartGoodwill;
+            public int EndGoodWill;
+        }
+
+        public static event EventHandler<AlgorithmDecisionEventArgs>? AlgorithmDecision;
     }
 }
