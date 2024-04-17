@@ -1,6 +1,4 @@
-using Enums;
-
-namespace Models
+namespace ModelLibrary
 {
     public class Trade(InventoryItems requestedItem, int requestedAmount, InventoryItems offeredItem, int offeredAmount)
     {

@@ -1,6 +1,5 @@
 using System.Collections.Generic;
-using Enums;
-using Models;
+using ModelLibrary;
 
 namespace ModelLibraryTest
 {
@@ -19,7 +18,7 @@ namespace ModelLibraryTest
             };
             
             //Then
-            Assert.AreEqual(10,tribe.PointTable[(InventoryItems.Wood,tribe)]);
+            Assert.That(tribe.PointTable[(InventoryItems.Wood,tribe)], Is.EqualTo(10));
         }
     }
 }

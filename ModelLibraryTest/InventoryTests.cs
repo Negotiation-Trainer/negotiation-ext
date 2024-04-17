@@ -1,5 +1,4 @@
-using Enums;
-using Models;
+using ModelLibrary;
 
 namespace ModelLibraryTest
 {
