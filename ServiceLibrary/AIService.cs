@@ -1,6 +1,5 @@
 using ModelLibrary;
 using ModelLibrary.Exceptions;
-using Models;
 using Newtonsoft.Json;
 using UnityHttpClients;
 

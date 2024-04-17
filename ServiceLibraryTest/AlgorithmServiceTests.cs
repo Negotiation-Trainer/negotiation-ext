@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using ModelLibrary;
 using ServiceLibrary.Algorithm;
 
-namespace Tests
+namespace ServiceLibraryTest
 {
     public class AlgorithmServiceTests
     {
@@ -44,7 +44,7 @@ namespace Tests
             SelfBuild selfBuild = new SelfBuild(random);
             selfBuild.SelfBuildThreshold = 5;
             Tribe tribe = new Tribe("test");
-            Trade trade = new Trade(InventoryItems.Wood,1,InventoryItems.Stone,1);
+            Trade trade = new Trade(InventoryItems.Wood,3,InventoryItems.Stone,3, "target", "originator");
             
             //When
             tribe.Inventory.AddToInventory(InventoryItems.Wood,8);
@@ -62,7 +62,7 @@ namespace Tests
             SelfBuild selfBuild = new SelfBuild(random);
             selfBuild.SelfBuildThreshold = 5;
             Tribe tribe = new Tribe("test");
-            Trade trade = new Trade(InventoryItems.Wood,1,InventoryItems.Stone,1);
+            Trade trade = new Trade(InventoryItems.Wood,3,InventoryItems.Stone,3, "target", "originator");
             
             //When
             tribe.Inventory.AddToInventory(InventoryItems.Wood,1);
@@ -80,7 +80,7 @@ namespace Tests
             BuildEffect buildEffect = new BuildEffect(random);
             Tribe originator = new Tribe("originator");
             Tribe target = new Tribe("target");
-            Trade trade = new Trade(InventoryItems.Wood,1,InventoryItems.Stone,1);
+            Trade trade = new Trade(InventoryItems.Wood,3,InventoryItems.Stone,3, target.Name, originator.Name);
             
             //When
             target.PointTable = new Dictionary<(InventoryItems, Tribe), int>
@@ -102,7 +102,7 @@ namespace Tests
             BuildEffect buildEffect = new BuildEffect(random);
             Tribe originator = new Tribe("originator");
             Tribe target = new Tribe("target");
-            Trade trade = new Trade(InventoryItems.Wood,1,InventoryItems.Stone,1);
+            Trade trade = new Trade(InventoryItems.Wood,3,InventoryItems.Stone,3, target.Name, originator.Name);
             
             //When
             target.PointTable = new Dictionary<(InventoryItems, Tribe), int>
@@ -124,7 +124,7 @@ namespace Tests
             Usefulness usefulness = new Usefulness(random);
             Tribe originator = new Tribe("originator");
             Tribe target = new Tribe("target");
-            Trade trade = new Trade(InventoryItems.Wood,3,InventoryItems.Stone,3);
+            Trade trade = new Trade(InventoryItems.Wood,3,InventoryItems.Stone,3, target.Name, originator.Name);
             
             //When
             target.Inventory.AddToInventory(InventoryItems.Stone,3);
@@ -142,7 +142,7 @@ namespace Tests
             Usefulness usefulness = new Usefulness(random);
             Tribe originator = new Tribe("originator");
             Tribe target = new Tribe("target");
-            Trade trade = new Trade(InventoryItems.Wood,1,InventoryItems.Stone,1);
+            Trade trade = new Trade(InventoryItems.Wood,1,InventoryItems.Stone,1, target.Name, originator.Name);
             
             //When
             target.Inventory.AddToInventory(InventoryItems.Stone,3);
@@ -157,7 +157,7 @@ namespace Tests
         {
             //Given
             TradeBalance tradeBalance = new TradeBalance();
-            Trade trade = new Trade(InventoryItems.Wood,1,InventoryItems.Stone,2);
+            Trade trade = new Trade(InventoryItems.Wood,1,InventoryItems.Stone,2, "target", "originator");
             
             //When
             var result = tradeBalance.Calculate(trade);
@@ -171,7 +171,7 @@ namespace Tests
         {
             //Given
             TradeBalance tradeBalance = new TradeBalance();
-            Trade trade = new Trade(InventoryItems.Wood,1,InventoryItems.Stone,1);
+            Trade trade = new Trade(InventoryItems.Wood,1,InventoryItems.Stone,1, "target", "originator");
             
             //When
             var result = tradeBalance.Calculate(trade);
@@ -185,7 +185,7 @@ namespace Tests
         {
             //Given
             TradeBalance tradeBalance = new TradeBalance();
-            Trade trade = new Trade(InventoryItems.Wood,2,InventoryItems.Stone,1);
+            Trade trade = new Trade(InventoryItems.Wood,3,InventoryItems.Stone,3, "target", "originator");
             
             //When
             var result = tradeBalance.Calculate(trade);
