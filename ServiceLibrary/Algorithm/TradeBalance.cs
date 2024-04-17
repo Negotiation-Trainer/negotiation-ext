@@ -1,3 +1,4 @@
+using System.Linq;
 using ModelLibrary;
 
 namespace ServiceLibrary.Algorithm
