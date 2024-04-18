@@ -39,11 +39,19 @@ namespace ServiceLibrary.Algorithm
         {
             foreach (InventoryItems resource in Enum.GetValues(typeof(InventoryItems)))
             {
-                var newTrade = new Trade(resource, trade.RequestedAmount, trade.OfferedItem, trade.OfferedAmount);
-                if (Calculate(newTrade, target, originator)) return newTrade;
+                var newTrade = new Trade(resource, trade.RequestedAmount, trade.OfferedItem, trade.OfferedAmount, trade.targetName, trade.originName);
+
+                try
+                {
+                    Calculate(newTrade, target, originator);
+                    return newTrade;
+                } catch (BuildEffectException)
+                {
+                    //Ignore
+                }
             }
 
-            return trade;
+            throw new BuildEffectException(trade, "This trade has a negative effect on my tribe.");
         }
     }
 }

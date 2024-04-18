@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using ModelLibrary;
 using ModelLibrary.Exceptions;
 using ServiceLibrary.Algorithm;
@@ -57,9 +58,15 @@ namespace ServiceLibrary
             }
             else
             {
-                //TODO: Call the counter offer service here
-                Trade counterOffer = null;
-                algoArgs = new AlgorithmDecisionEventArgs(exceptions, false, null);
+                try
+                {
+                    Trade counterOffer = CreateCounterTrade(trade, originator, targetCpu, exceptions);
+                    algoArgs = new AlgorithmDecisionEventArgs(exceptions, false, counterOffer);   
+                } catch (OfferDeclinedException e)
+                {
+                    exceptions.Add(e);
+                    algoArgs = new AlgorithmDecisionEventArgs(exceptions, false, null);
+                }
             }
 
             AlgorithmDecision?.Invoke(this, algoArgs);
@@ -77,41 +84,35 @@ namespace ServiceLibrary
             }
         }
 
-        private Trade CreateCounterTrade(Trade trade, Tribe originator, Tribe targetCpu, Exception[] exceptions)
+        private Trade CreateCounterTrade(Trade trade, Tribe originator, Tribe targetCpu, List<OfferDeclinedException> exceptions)
         {
 
-            if () //selfbuild
+            if (exceptions.OfType<SelfBuildException>().Any()) //selfbuild
             {
                 trade = _selfBuild.CalculateCounter(trade, targetCpu);
             }
 
-            if () //buildeffect
+            if (exceptions.OfType<BuildEffectException>().Any()) //buildeffect
             {
                 trade =_buildEffect.CalculateCounter(trade, targetCpu, originator);
             }
 
-            if () //usefulness
+            if (exceptions.OfType<UsefulnessException>().Any()) //usefulness
             {
                 trade =_usefulness.CalculateCounter(trade, targetCpu);
             }
 
-            if () //trade balance
+            if (exceptions.OfType<TradeBalanceException>().Any()) //trade balance
             {
-                trade =_tradeBalance.CalculateCounter(trade, targetCpu, originator);
+                trade =_tradeBalance.CalculateCounter(trade);
             }
-
-            if (!TradePossible(trade,originator,targetCpu)) //trade not possible
+            
+            if (targetCpu.Inventory.GetInventoryAmount(trade.RequestedItem) < trade.RequestedAmount) //trade not possible
             {
-                //AI decline
+                throw new InsufficientResourcesException(trade, targetCpu.Inventory.GetInventoryAmount(trade.RequestedItem) - trade.RequestedAmount, "I do not have enough resources to complete the trade");
             }
 
             return trade;
-        }
-
-        private bool TradePossible(Trade trade, Tribe originator, Tribe targetCpu)
-        {
-            return originator.Inventory.GetInventoryAmount(trade.OfferedItem) >= trade.OfferedAmount && 
-                   targetCpu.Inventory.GetInventoryAmount(trade.RequestedItem) >= trade.RequestedAmount;
         }
         
         //fire event with all decisions of the algorithm to be able to debug in unity

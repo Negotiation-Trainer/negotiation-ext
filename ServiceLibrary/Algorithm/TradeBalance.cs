@@ -26,18 +26,18 @@ namespace ServiceLibrary.Algorithm
             if (trade.OfferedAmount + goodWill == trade.RequestedAmount)
             {
                 target.GoodWill[originator] = 0;
+                return;
             }
             int advantage = trade.OfferedAmount + goodWill - trade.RequestedAmount;
             target.GoodWill[originator] = advantage;
         }
         
-        public Trade CalculateCounter(Trade trade, Tribe target, Tribe originator)
+        public Trade CalculateCounter(Trade trade)
         {
-            if (_random.NextDouble() > 0.5f)
-            {
-                return new Trade(trade.RequestedItem, trade.OfferedAmount, trade.OfferedItem, trade.OfferedAmount);
-            }
-            return new Trade(trade.RequestedItem, trade.RequestedAmount, trade.OfferedItem, trade.RequestedAmount);
+            return _random.NextDouble() > 0.5f ? 
+                new Trade(trade.RequestedItem, trade.OfferedAmount, trade.OfferedItem, trade.OfferedAmount, trade.targetName, trade.originName) 
+                : new Trade(trade.RequestedItem, trade.RequestedAmount, trade.OfferedItem, trade.RequestedAmount, trade.targetName, trade.originName);
+            
         }
     }
 }

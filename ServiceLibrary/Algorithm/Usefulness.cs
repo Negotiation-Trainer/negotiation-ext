@@ -10,7 +10,7 @@ namespace ServiceLibrary.Algorithm
         {
             var amountInInventory = target.Inventory.GetInventoryAmount(trade.OfferedItem);
             
-            switch (amountInInventory)
+            switch (amountInInventory + trade.OfferedAmount)
             {
                 case < 5:
                     throw new UsefulnessException(trade, "This trade is not useful for me.");
@@ -23,11 +23,19 @@ namespace ServiceLibrary.Algorithm
         {
             foreach (InventoryItems resource in Enum.GetValues(typeof(InventoryItems)))
             {
-                var newTrade = new Trade(trade.RequestedItem, trade.RequestedAmount, resource, trade.OfferedAmount);
-                if (Calculate(newTrade, target)) return newTrade;
+                var newTrade = new Trade(trade.RequestedItem, trade.RequestedAmount, resource, trade.OfferedAmount, trade.targetName, trade.originName);
+
+                try
+                {
+                    Calculate(newTrade, target);
+                    return newTrade;
+                } catch (UsefulnessException)
+                {
+                    //Ignore
+                }
             }
 
-            return trade;
+            throw new UsefulnessException(trade, "This trade is not useful for me.");
         }
     }
 }
