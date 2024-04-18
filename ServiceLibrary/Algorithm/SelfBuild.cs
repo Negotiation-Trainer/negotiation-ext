@@ -46,17 +46,6 @@ namespace ServiceLibrary.Algorithm
 
             throw new SelfBuildException(trade, "I Want to build the build myself.");
         }
-
-        public Trade CalculateCounter(Trade trade, Tribe target)
-        {
-            foreach (InventoryItems resource in Enum.GetValues(typeof(InventoryItems)))
-            {
-                var newTrade = new Trade(resource, trade.RequestedAmount, trade.OfferedItem, trade.OfferedAmount);
-                if (Calculate(newTrade, target)) return newTrade;
-            }
-
-            return trade;
-        }
     }
 
    

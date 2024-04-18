@@ -115,37 +115,6 @@ namespace ServiceLibrary
             return trade;
         }
 
-        private Trade CreateCounterTrade(Trade trade, Tribe originator, Tribe targetCpu, Exception[] exceptions)
-        {
-
-            if () //selfbuild
-            {
-                trade = _selfBuild.CalculateCounter(trade, targetCpu);
-            }
-
-            if () //buildeffect
-            {
-                trade =_buildEffect.CalculateCounter(trade, targetCpu, originator);
-            }
-
-            if () //usefulness
-            {
-                trade =_usefulness.CalculateCounter(trade, targetCpu);
-            }
-
-            if () //trade balance
-            {
-                trade =_tradeBalance.CalculateCounter(trade, targetCpu, originator);
-            }
-
-            if (!TradePossible(trade,originator,targetCpu)) //trade not possible
-            {
-                //AI decline
-            }
-
-            return trade;
-        }
-
         private bool TradePossible(Trade trade, Tribe originator, Tribe targetCpu)
         {
             return originator.Inventory.GetInventoryAmount(trade.OfferedItem) >= trade.OfferedAmount && 

@@ -37,16 +37,5 @@ namespace ServiceLibrary.Algorithm
 
             throw new UsefulnessException(trade, "This trade is not useful for me.");
         }
-        
-        public Trade CalculateCounter(Trade trade, Tribe target)
-        {
-            foreach (InventoryItems resource in Enum.GetValues(typeof(InventoryItems)))
-            {
-                var newTrade = new Trade(trade.RequestedItem, trade.RequestedAmount, resource, trade.OfferedAmount);
-                if (Calculate(newTrade, target)) return newTrade;
-            }
-
-            return trade;
-        }
     }
 }
