@@ -39,5 +39,14 @@ namespace ServiceLibrary.Algorithm
                 : new Trade(trade.RequestedItem, trade.RequestedAmount, trade.OfferedItem, trade.RequestedAmount, trade.targetName, trade.originName);
             
         }
+        
+        public Trade CalculateCounter(Trade trade, Tribe target, Tribe originator)
+        {
+            if (_random.NextDouble() > 0.5f)
+            {
+                return new Trade(trade.RequestedItem, trade.OfferedAmount, trade.OfferedItem, trade.OfferedAmount);
+            }
+            return new Trade(trade.RequestedItem, trade.RequestedAmount, trade.OfferedItem, trade.RequestedAmount);
+        }
     }
 }
