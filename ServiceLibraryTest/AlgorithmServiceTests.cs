@@ -1,18 +1,25 @@
 using System;
 using System.Collections.Generic;
 using ModelLibrary;
+using ModelLibrary.Exceptions;
 using ServiceLibrary.Algorithm;
 
 namespace ServiceLibraryTest
 {
     public class AlgorithmServiceTests
     {
+        private Random random;
+        
+        [SetUp]
+        public void Setup()
+        {
+            random = new Random();
+        }
         // A Test behaves as an ordinary method
         [Test]
         public void CalculateRandomness_HighRandomness_ReturnsTrue()
         {
             //Given
-            Random random = new Random();
             Randomness randomness = new Randomness(random);
 
             //when
@@ -26,7 +33,6 @@ namespace ServiceLibraryTest
         public void CalculateRandomness_LowRandomness_ReturnsFalse()
         {
             //Given
-            Random random = new Random();
             Randomness randomness = new Randomness(random);
 
             //when
@@ -40,41 +46,36 @@ namespace ServiceLibraryTest
         public void CalculateSelfBuild_HigerThanBorder_ReturnsFalse()
         {
             //Given
-            Random random = new Random();
             SelfBuild selfBuild = new SelfBuild(random);
             Tribe tribe = new Tribe("test");
             Trade trade = new Trade(InventoryItems.Wood,3,InventoryItems.Stone,3, "target", "originator");
             
             //When
             tribe.Inventory.AddToInventory(InventoryItems.Wood,8);
-            var result = selfBuild.Calculate(trade, tribe);
             
             //Then
-            Assert.IsFalse(result);
+            Assert.Throws<SelfBuildException>(() => selfBuild.Calculate(trade, tribe));
         }
         
         [Test]
         public void CalculateSelfBuild_LowerThanBorder_ReturnsTrue()
         {
             //Given
-            Random random = new Random();
             SelfBuild selfBuild = new SelfBuild(random);
             Tribe tribe = new Tribe("test");
             Trade trade = new Trade(InventoryItems.Wood,3,InventoryItems.Stone,3, "target", "originator");
             
             //When
             tribe.Inventory.AddToInventory(InventoryItems.Wood,1);
-            var result = selfBuild.Calculate(trade, tribe);
             
             //Then
-            Assert.IsTrue(result);
+            Assert.DoesNotThrow(() => selfBuild.Calculate(trade, tribe));
         }
         
         [Test]
         public void CalculateBuildEffect_GoodEffect_ReturnsTrue()
         {
             //Given
-            Random random = new Random();
             BuildEffect buildEffect = new BuildEffect(random);
             Tribe originator = new Tribe("originator");
             Tribe target = new Tribe("target");
@@ -86,17 +87,15 @@ namespace ServiceLibraryTest
                 [(InventoryItems.Wood, target)] = 10,
                 [(InventoryItems.Wood, originator)] = 5
             };
-            var result = buildEffect.Calculate(trade, target, originator);
             
             //Then
-            Assert.IsTrue(result);
+            Assert.DoesNotThrow(() => buildEffect.Calculate(trade, target, originator));
         }
         
         [Test]
         public void CalculateBuildEffect_BadEffect_ReturnsFalse()
         {
             //Given
-            Random random = new Random();
             BuildEffect buildEffect = new BuildEffect(random);
             Tribe originator = new Tribe("originator");
             Tribe target = new Tribe("target");
@@ -108,17 +107,15 @@ namespace ServiceLibraryTest
                 [(InventoryItems.Wood, target)] = 10,
                 [(InventoryItems.Wood, originator)] = -5
             };
-            var result = buildEffect.Calculate(trade, target, originator);
             
             //Then
-            Assert.IsFalse(result);
+            Assert.Throws<BuildEffectException>(() => buildEffect.Calculate(trade, target, originator));
         }
         
         [Test]
         public void CalculateUsefulness_IsUseful_ReturnsTrue()
         {
             //Given
-            Random random = new Random();
             Usefulness usefulness = new Usefulness(random);
             Tribe originator = new Tribe("originator");
             Tribe target = new Tribe("target");
@@ -126,17 +123,15 @@ namespace ServiceLibraryTest
             
             //When
             target.Inventory.AddToInventory(InventoryItems.Stone,3);
-            var result = usefulness.Calculate(trade, target);
             
             //Then
-            Assert.IsTrue(result);
+            Assert.DoesNotThrow(() => usefulness.Calculate(trade, target));
         }
         
         [Test]
         public void CalculateUsefulness_IsNotUseful_ReturnsFalse()
         {
             //Given
-            Random random = new Random();
             Usefulness usefulness = new Usefulness(random);
             Tribe originator = new Tribe("originator");
             Tribe target = new Tribe("target");
@@ -144,72 +139,61 @@ namespace ServiceLibraryTest
             
             //When
             target.Inventory.AddToInventory(InventoryItems.Stone,3);
-            var result = usefulness.Calculate(trade, target);
             
             //Then
-            Assert.IsFalse(result);
+            Assert.Throws<UsefulnessException>(() => usefulness.Calculate(trade, target));
         }
         
         [Test]
         public void CalculateTradeBalance_IsFavorable_ReturnsTrue()
         {
             //Given
-            TradeBalance tradeBalance = new TradeBalance();
+            TradeBalance tradeBalance = new TradeBalance(random);
             Tribe originator = new Tribe("originator");
             Tribe target = new Tribe("target");
             originator.GoodWill.Add(target, 0);
             target.GoodWill.Add(originator, 0);
             Trade trade = new Trade(InventoryItems.Wood,1,InventoryItems.Stone,2, target.Name, originator.Name);
             
-            
-            //When
-            var result = tradeBalance.Calculate(trade,target,originator);
-            
-            //Then
-            Assert.IsTrue(result);
+            //When & Then
+            Assert.DoesNotThrow(() => tradeBalance.Calculate(trade,target,originator));
         }
         
         [Test]
         public void CalculateTradeBalance_IsEqual_ReturnsTrue()
         {
             //Given
-            TradeBalance tradeBalance = new TradeBalance();
+            TradeBalance tradeBalance = new TradeBalance(random);
             Tribe originator = new Tribe("originator");
             Tribe target = new Tribe("target");
             originator.GoodWill.Add(target, 0);
             target.GoodWill.Add(originator, 0);
             Trade trade = new Trade(InventoryItems.Wood,1,InventoryItems.Stone,1, target.Name, originator.Name);
             
-            //When
-            var result = tradeBalance.Calculate(trade,target,originator);
-            
-            //Then
-            Assert.IsTrue(result);
+            //When & Then
+            Assert.DoesNotThrow(() => tradeBalance.Calculate(trade,target,originator));
         }
         
         [Test]
         public void CalculateTradeBalance_IsUnfavorable_ReturnsFalse()
         {
             //Given
-            TradeBalance tradeBalance = new TradeBalance();
+            TradeBalance tradeBalance = new TradeBalance(random);
             Tribe originator = new Tribe("originator");
             Tribe target = new Tribe("target");
             originator.GoodWill.Add(target, 0);
             target.GoodWill.Add(originator, 0);
             Trade trade = new Trade(InventoryItems.Wood,2,InventoryItems.Stone,1, target.Name, originator.Name);
             
-            //When
-            var result = tradeBalance.Calculate(trade, target, originator);
-            
-            //Then
-            Assert.IsFalse(result);
+            //When & Then
+            Assert.Throws<TradeBalanceException>(() => tradeBalance.Calculate(trade, target, originator));
         }
         
         [Test]
         public void CalculateTradeBalance_IsFavorable_ReturnsTrueGetGoodWill()
         {
             //Given
-            TradeBalance tradeBalance = new TradeBalance();
+            TradeBalance tradeBalance = new TradeBalance(random);
             Tribe originator = new Tribe("originator");
             Tribe target = new Tribe("target");
             originator.GoodWill.Add(target, 0);
@@ -217,34 +201,26 @@ namespace ServiceLibraryTest
             Trade trade = new Trade(InventoryItems.Wood,1,InventoryItems.Stone,2, target.Name, originator.Name);
             
             
-            //When
-            var result = tradeBalance.Calculate(trade,target,originator);
-            var goodWill = target.GoodWill[originator];
-            
-            //Then
-            Assert.IsTrue(result);
-            Assert.That(goodWill, Is.EqualTo(1));
+            //When & Then
+            Assert.DoesNotThrow(() => tradeBalance.Calculate(trade,target,originator));
+            Assert.That(target.GoodWill[originator], Is.EqualTo(1));
         }
         
         [Test]
         public void CalculateTradeBalance_IsUnfavorableButHasGoodWill_ReturnsTrue()
         {
             //Given
-            TradeBalance tradeBalance = new TradeBalance();
+            TradeBalance tradeBalance = new TradeBalance(random);
             Tribe originator = new Tribe("originator");
             Tribe target = new Tribe("target");
             originator.GoodWill.Add(target, 0);
             target.GoodWill.Add(originator, 0);
             Trade trade = new Trade(InventoryItems.Wood,2,InventoryItems.Stone,1, target.Name, originator.Name);
             
-            //When
+            //When & Then
             target.GoodWill[originator] = 1;
-            var result = tradeBalance.Calculate(trade, target, originator);
-            var goodWill = target.GoodWill[originator];
-            
-            //Then
-            Assert.IsTrue(result);
-            Assert.That(goodWill, Is.EqualTo(0));
+            Assert.DoesNotThrow(() => tradeBalance.Calculate(trade, target, originator));
+            Assert.That(target.GoodWill[originator], Is.EqualTo(0));
         }
     }
 }
