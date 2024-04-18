@@ -29,7 +29,7 @@ namespace ServiceLibrary
             _randomness = new Randomness(random);
             _buildEffect = new BuildEffect(random);
             _usefulness = new Usefulness(random);
-            _tradeBalance = new TradeBalance();
+            _tradeBalance = new TradeBalance(random);
         }
 
         public void Decide(Trade trade,Tribe originator, Tribe targetCpu)
@@ -75,6 +75,43 @@ namespace ServiceLibrary
             {
                 exceptions.Add(e);
             }
+        }
+
+        private Trade CreateCounterTrade(Trade trade, Tribe originator, Tribe targetCpu, Exception[] exceptions)
+        {
+
+            if () //selfbuild
+            {
+                trade = _selfBuild.CalculateCounter(trade, targetCpu);
+            }
+
+            if () //buildeffect
+            {
+                trade =_buildEffect.CalculateCounter(trade, targetCpu, originator);
+            }
+
+            if () //usefulness
+            {
+                trade =_usefulness.CalculateCounter(trade, targetCpu);
+            }
+
+            if () //trade balance
+            {
+                trade =_tradeBalance.CalculateCounter(trade, targetCpu, originator);
+            }
+
+            if (!TradePossible(trade,originator,targetCpu)) //trade not possible
+            {
+                //AI decline
+            }
+
+            return trade;
+        }
+
+        private bool TradePossible(Trade trade, Tribe originator, Tribe targetCpu)
+        {
+            return originator.Inventory.GetInventoryAmount(trade.OfferedItem) >= trade.OfferedAmount && 
+                   targetCpu.Inventory.GetInventoryAmount(trade.RequestedItem) >= trade.RequestedAmount;
         }
         
         //fire event with all decisions of the algorithm to be able to debug in unity
