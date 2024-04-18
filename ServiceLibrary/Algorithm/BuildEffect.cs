@@ -28,5 +28,16 @@ namespace ServiceLibrary.Algorithm
                 _ => false
             };
         }
+        
+        public Trade CalculateCounter(Trade trade, Tribe target, Tribe originator)
+        {
+            foreach (InventoryItems resource in Enum.GetValues(typeof(InventoryItems)))
+            {
+                var newTrade = new Trade(resource, trade.RequestedAmount, trade.OfferedItem, trade.OfferedAmount);
+                if (Calculate(newTrade, target, originator)) return newTrade;
+            }
+
+            return trade;
+        }
     }
 }
