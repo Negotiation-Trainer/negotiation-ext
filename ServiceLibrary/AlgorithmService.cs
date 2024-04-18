@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using ModelLibrary;
+using ModelLibrary.Exceptions;
 using ServiceLibrary.Algorithm;
 
 /*
@@ -34,6 +36,7 @@ namespace ServiceLibrary
         {
             var algoArgs = new AlgorithmDecisionEventArgs();
             int startGoodwill = targetCpu.GoodWill[originator];
+            List<OfferDeclinedException> exceptions = [];
             
             //Original Decisions
             bool selfBuildDecision = _selfBuild.Calculate(trade, targetCpu);
