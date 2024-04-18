@@ -1,21 +1,35 @@
 using System;
 using ModelLibrary;
+using ModelLibrary.Exceptions;
 
 namespace ServiceLibrary.Algorithm
 {
     public class SelfBuild
     {
-        public int SelfBuildThreshold { get; set; }
+        private int SelfBuildThreshold { get; }
         private readonly Random _random;
         public SelfBuild(Random random)
         {
             SelfBuildThreshold = 5;
             _random = random;
         }
-        public bool Calculate(Trade trade, Tribe target)
+        public void Calculate(Trade trade, Tribe target)
         {
-            if (target.Inventory.GetInventoryAmount(trade.RequestedItem) == SelfBuildThreshold) return (_random.NextDouble() > 0.5f);
-            else return target.Inventory.GetInventoryAmount(trade.RequestedItem) < SelfBuildThreshold;
+            
+            var amountInInventory = target.Inventory.GetInventoryAmount(trade.RequestedItem);
+
+            if (amountInInventory < SelfBuildThreshold)
+            {
+                throw new SelfBuildException(trade, "I Want to build the build myself.");
+            }
+
+            if (amountInInventory == SelfBuildThreshold && _random.NextDouble() > 0.5f)
+            {
+                throw new SelfBuildException(trade, "I Want to build the build myself.");
+            }
         }
+        
     }
+
+   
 }

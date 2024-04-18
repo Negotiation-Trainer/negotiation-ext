@@ -32,62 +32,57 @@ namespace ServiceLibrary
             _tradeBalance = new TradeBalance();
         }
 
-        public bool Decide(Trade trade,Tribe originator, Tribe targetCpu)
+        public void Decide(Trade trade,Tribe originator, Tribe targetCpu)
         {
-            var algoArgs = new AlgorithmDecisionEventArgs();
             int startGoodwill = targetCpu.GoodWill[originator];
             List<OfferDeclinedException> exceptions = [];
             
             //Original Decisions
-            bool selfBuildDecision = _selfBuild.Calculate(trade, targetCpu);
-            bool buildEffectDecision = _buildEffect.Calculate(trade, targetCpu, originator);
-            bool usefulnessDecision = _usefulness.Calculate(trade, targetCpu);
-            bool tradeBalanceDecision = _tradeBalance.Calculate(trade, targetCpu, originator);
-
-            algoArgs.SelfBuild = selfBuildDecision;
-            algoArgs.BuildEffect = buildEffectDecision;
-            algoArgs.Usefulness = usefulnessDecision;
-            algoArgs.TradeBalance = tradeBalanceDecision;
-            algoArgs.StartGoodwill = startGoodwill;
+            ExecuteAndCatch<SelfBuildException>(() => _selfBuild.Calculate(trade, targetCpu), exceptions);
+            ExecuteAndCatch<BuildEffectException>(() => _buildEffect.Calculate(trade, targetCpu, originator), exceptions);
+            ExecuteAndCatch<UsefulnessException>(() => _usefulness.Calculate(trade, targetCpu), exceptions);
+            ExecuteAndCatch<TradeBalanceException>(() => _tradeBalance.Calculate(trade, targetCpu, originator), exceptions);
             
             //Randomise Decisions
-            selfBuildDecision = _randomness.Calculate(_selfBuildRandomChance) ? !selfBuildDecision : selfBuildDecision;
-            buildEffectDecision = _randomness.Calculate(_buildEffectRandomChance) ? !buildEffectDecision : buildEffectDecision;
-            usefulnessDecision = _randomness.Calculate(_usefulnessRandomChance) ? !usefulnessDecision : usefulnessDecision;
-            tradeBalanceDecision = _randomness.Calculate(_tradeBalanceRandomChance) ? !tradeBalanceDecision : tradeBalanceDecision;
-            
-            algoArgs.RndSelfBuild = selfBuildDecision;
-            algoArgs.RndBuildEffect = buildEffectDecision;
-            algoArgs.RndUsefulness = usefulnessDecision;
-            algoArgs.RndTradeBalance = tradeBalanceDecision;
-            algoArgs.EndGoodWill = targetCpu.GoodWill[originator];
-            
-            AlgorithmDecision?.Invoke(this, algoArgs);
+            if (!_randomness.Calculate(_selfBuildRandomChance)) throw new SelfBuildException(trade, "I Want to build the build myself.");
+            if (_randomness.Calculate(_buildEffectRandomChance))  throw new BuildEffectException(trade, "This trade has a negative effect on my tribe.");
+            if(_randomness.Calculate(_usefulnessRandomChance)) throw new UsefulnessException(trade, "This trade is not useful for me.");
+            if (_randomness.Calculate(_tradeBalanceRandomChance)) throw new TradeBalanceException(trade, startGoodwill, "Trade is not balanced.");
 
-            if (selfBuildDecision && buildEffectDecision && usefulnessDecision && tradeBalanceDecision)
+            AlgorithmDecisionEventArgs algoArgs;
+
+            if (exceptions.Count == 0)
             {
-                return true;
+                algoArgs = new AlgorithmDecisionEventArgs(exceptions, true, null);
+            }
+            else
+            {
+                //TODO: Call the counter offer service here
+                Trade counterOffer = null;
+                algoArgs = new AlgorithmDecisionEventArgs(exceptions, false, null);
             }
 
-            targetCpu.GoodWill[originator] = startGoodwill;
-            return false;
+            AlgorithmDecision?.Invoke(this, algoArgs);
+        }
+        
+        private void ExecuteAndCatch<T>(Action action, List<OfferDeclinedException> exceptions) where T : OfferDeclinedException
+        {
+            try
+            {
+                action();
+            }
+            catch (T e)
+            {
+                exceptions.Add(e);
+            }
         }
         
         //fire event with all decisions of the algorithm to be able to debug in unity
-        public class AlgorithmDecisionEventArgs : EventArgs
+        public class AlgorithmDecisionEventArgs(List<OfferDeclinedException> issues, bool tradeAccepted, Trade counterOffer) : EventArgs
         {
-            public bool SelfBuild;
-            public bool BuildEffect;
-            public bool Usefulness;
-            public bool TradeBalance;
-            
-            public bool RndSelfBuild;
-            public bool RndBuildEffect;
-            public bool RndUsefulness;
-            public bool RndTradeBalance;
-
-            public int StartGoodwill;
-            public int EndGoodWill;
+            public List<OfferDeclinedException> issuesWithTrade { get; } = issues;
+            public bool tradeAccepted { get; } = tradeAccepted;
+            public Trade? coutnerOffer { get; } = counterOffer;
         }
 
         public static event EventHandler<AlgorithmDecisionEventArgs>? AlgorithmDecision;

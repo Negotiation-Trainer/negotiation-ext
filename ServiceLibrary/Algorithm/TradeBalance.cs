@@ -1,11 +1,12 @@
 using System.Linq;
 using ModelLibrary;
+using ModelLibrary.Exceptions;
 
 namespace ServiceLibrary.Algorithm
 {
     public class TradeBalance
     {
-        public bool Calculate(Trade trade, Tribe target, Tribe originator)
+        public void Calculate(Trade trade, Tribe target, Tribe originator)
         {
             if (!target.GoodWill.Keys.Contains(originator))
             {
@@ -13,15 +14,13 @@ namespace ServiceLibrary.Algorithm
             }
             int goodWill = target.GoodWill[originator];
             
-            if(trade.OfferedAmount + goodWill < trade.RequestedAmount) return false;
+            if(trade.OfferedAmount + goodWill < trade.RequestedAmount) throw new TradeBalanceException(trade, goodWill,"Trade is not balanced.");
             if (trade.OfferedAmount + goodWill == trade.RequestedAmount)
             {
                 target.GoodWill[originator] = 0;
-                return true;
             }
             int advantage = trade.OfferedAmount + goodWill - trade.RequestedAmount;
             target.GoodWill[originator] = advantage;
-            return true;
         }
     }
 }

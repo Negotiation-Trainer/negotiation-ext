@@ -1,5 +1,6 @@
 using System;
 using ModelLibrary;
+using ModelLibrary.Exceptions;
 
 namespace ServiceLibrary.Algorithm
 {
@@ -18,15 +19,20 @@ namespace ServiceLibrary.Algorithm
         ///random if neutral.
         ///false if lose points 
         ///</returns>
-        public bool Calculate(Trade trade, Tribe target, Tribe originator)
+        public void Calculate(Trade trade, Tribe target, Tribe originator)
         {
             var points = target.PointTable?[(trade.RequestedItem, originator)];
-            return points switch
+            var tradeShouldBeAccepted = points switch
             {
                 5 => true,
                 0 => _random.NextDouble() > 0.5f,
                 _ => false
             };
+            
+            if (!tradeShouldBeAccepted)
+            {
+                throw new BuildEffectException(trade, "This trade has a negative effect on my tribe.");
+            }
         }
     }
 }

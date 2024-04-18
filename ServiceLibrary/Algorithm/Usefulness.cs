@@ -1,21 +1,22 @@
 using System;
 using ModelLibrary;
+using ModelLibrary.Exceptions;
 
 namespace ServiceLibrary.Algorithm
 {
-    public class Usefulness
+    public class Usefulness(Random random)
     {
-        private readonly Random _random;
-
-        public Usefulness(Random random)
+        public void Calculate(Trade trade, Tribe target)
         {
-            _random = random;
-        }
-        public bool Calculate(Trade trade, Tribe target)
-        {
-            if (target.Inventory.GetInventoryAmount(trade.OfferedItem) + trade.OfferedAmount > 5) return true;
-            if (target.Inventory.GetInventoryAmount(trade.OfferedItem) + trade.OfferedAmount == 5) return _random.NextDouble() > 0.5f;
-            return false;
+            var amountInInventory = target.Inventory.GetInventoryAmount(trade.OfferedItem);
+            
+            switch (amountInInventory)
+            {
+                case < 5:
+                    throw new UsefulnessException(trade, "This trade is not useful for me.");
+                case 5 when random.NextDouble() > 0.5f:
+                    throw new UsefulnessException(trade, "This trade is not useful for me.");
+            }
         }
     }
 }

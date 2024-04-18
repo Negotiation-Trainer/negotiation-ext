@@ -42,7 +42,6 @@ namespace ServiceLibraryTest
             //Given
             Random random = new Random();
             SelfBuild selfBuild = new SelfBuild(random);
-            selfBuild.SelfBuildThreshold = 5;
             Tribe tribe = new Tribe("test");
             Trade trade = new Trade(InventoryItems.Wood,3,InventoryItems.Stone,3, "target", "originator");
             
@@ -60,7 +59,6 @@ namespace ServiceLibraryTest
             //Given
             Random random = new Random();
             SelfBuild selfBuild = new SelfBuild(random);
-            selfBuild.SelfBuildThreshold = 5;
             Tribe tribe = new Tribe("test");
             Trade trade = new Trade(InventoryItems.Wood,3,InventoryItems.Stone,3, "target", "originator");
             
