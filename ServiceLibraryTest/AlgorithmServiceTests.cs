@@ -159,8 +159,8 @@ namespace ServiceLibraryTest
             TradeBalance tradeBalance = new TradeBalance();
             Tribe originator = new Tribe("originator");
             Tribe target = new Tribe("target");
-            originator.GoodWill = new Dictionary<Tribe, int>() { [target] = 0 };
-            target.GoodWill = new Dictionary<Tribe, int>() { [originator] = 0 };
+            originator.GoodWill.Add(target, 0);
+            target.GoodWill.Add(originator, 0);
             Trade trade = new Trade(InventoryItems.Wood,1,InventoryItems.Stone,2, target.Name, originator.Name);
             
             
@@ -178,8 +178,8 @@ namespace ServiceLibraryTest
             TradeBalance tradeBalance = new TradeBalance();
             Tribe originator = new Tribe("originator");
             Tribe target = new Tribe("target");
-            originator.GoodWill = new Dictionary<Tribe, int>() { [target] = 0 };
-            target.GoodWill = new Dictionary<Tribe, int>() { [originator] = 0 };
+            originator.GoodWill.Add(target, 0);
+            target.GoodWill.Add(originator, 0);
             Trade trade = new Trade(InventoryItems.Wood,1,InventoryItems.Stone,1, target.Name, originator.Name);
             
             //When
@@ -196,8 +196,8 @@ namespace ServiceLibraryTest
             TradeBalance tradeBalance = new TradeBalance();
             Tribe originator = new Tribe("originator");
             Tribe target = new Tribe("target");
-            originator.GoodWill = new Dictionary<Tribe, int>() { [target] = 0 };
-            target.GoodWill = new Dictionary<Tribe, int>() { [originator] = 0 };
+            originator.GoodWill.Add(target, 0);
+            target.GoodWill.Add(originator, 0);
             Trade trade = new Trade(InventoryItems.Wood,2,InventoryItems.Stone,1, target.Name, originator.Name);
             
             //When
@@ -214,8 +214,8 @@ namespace ServiceLibraryTest
             TradeBalance tradeBalance = new TradeBalance();
             Tribe originator = new Tribe("originator");
             Tribe target = new Tribe("target");
-            originator.GoodWill = new Dictionary<Tribe, int>() { [target] = 0 };
-            target.GoodWill = new Dictionary<Tribe, int>() { [originator] = 0 };
+            originator.GoodWill.Add(target, 0);
+            target.GoodWill.Add(originator, 0);
             Trade trade = new Trade(InventoryItems.Wood,1,InventoryItems.Stone,2, target.Name, originator.Name);
             
             
@@ -235,8 +235,8 @@ namespace ServiceLibraryTest
             TradeBalance tradeBalance = new TradeBalance();
             Tribe originator = new Tribe("originator");
             Tribe target = new Tribe("target");
-            originator.GoodWill = new Dictionary<Tribe, int>() { [target] = 0 };
-            target.GoodWill = new Dictionary<Tribe, int>() { [originator] = 0 };
+            originator.GoodWill.Add(target, 0);
+            target.GoodWill.Add(originator, 0);
             Trade trade = new Trade(InventoryItems.Wood,2,InventoryItems.Stone,1, target.Name, originator.Name);
             
             //When
