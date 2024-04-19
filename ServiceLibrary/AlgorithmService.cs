@@ -126,7 +126,8 @@ namespace ServiceLibrary
         {
             public List<OfferDeclinedException> issuesWithTrade { get; } = issues;
             public bool tradeAccepted { get; } = tradeAccepted;
-            public Trade? coutnerOffer { get; } = counterOffer;
+            public Trade? counterOffer { get; } = counterOffer;
+
         }
 
         public static event EventHandler<AlgorithmDecisionEventArgs>? AlgorithmDecision;
