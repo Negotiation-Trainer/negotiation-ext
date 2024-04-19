@@ -16,11 +16,17 @@ public class BackOfficeHttpClient: AbstractHttpClient
     /// Initializes a new instance of the <see cref="BackOfficeHttpClient"/> class.
     /// </summary>
     /// <param name="baseUrl">The base URL of the API. Do not include a trailing slash.</param>
-    /// <param name="sessionToken">The session token for authentication.</param>
-    public BackOfficeHttpClient(string baseUrl, string sessionToken) : base(baseUrl)
+    /// <param name="sessionPwd">The session token for authentication.</param>
+    public BackOfficeHttpClient(string baseUrl, string sessionPwd) : base(baseUrl)
     {
         // Add the session token to the headers
-        _headers.Add("Authorization", sessionToken);
+        _headers.Add("Authorization", $"{sessionPwd})");
+    }
+    
+    public string Authenticate(string sessionPwd)
+    {
+        string path = "authenticate";
+        return Post(path, _headers, new SessionPassword(sessionPwd));
     }
 
     /// <summary>

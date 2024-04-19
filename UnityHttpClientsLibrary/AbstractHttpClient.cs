@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
@@ -87,22 +88,17 @@ namespace UnityHttpClients
         /// <returns>A string response from the POST request.</returns>
         protected string Post<T>(string pathUrl, Dictionary<string, string> headers, T body)
         {
-            UnityWebRequest request = new UnityWebRequest($"{_baseUrl}/{pathUrl}", "POST");
-
             // Add the body to the request when it is not null
-            if (body != null)
-            {
-                byte[] bodyRaw = Encoding.UTF8.GetBytes(JsonUtility.ToJson(body));
-                request.uploadHandler = new UploadHandlerRaw(bodyRaw);
-                request.downloadHandler = new DownloadHandlerBuffer();
-            }
-            
-            request.SetRequestHeader("Content-Type", "application/json");
+            string bodyJson = body != null ? JsonUtility.ToJson(body) : "";
+
+
+            using UnityWebRequest request = UnityWebRequest.PostWwwForm($"{_baseUrl}/{pathUrl}", bodyJson);
+            new MultipartFormFileSection("")
             foreach (KeyValuePair<string, string> header in headers)
             {
                 request.SetRequestHeader(header.Key, header.Value);
             }
-
+                
             var operation = request.SendWebRequest();
 
             // Wait for the request to complete
