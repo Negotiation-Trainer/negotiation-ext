@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using ModelLibrary;
 using ModelLibrary.Exceptions;
+using ServiceLibrary;
 using ServiceLibrary.Algorithm;
 
 namespace ServiceLibraryTest
@@ -221,6 +222,78 @@ namespace ServiceLibraryTest
             target.GoodWill[originator] = 1;
             Assert.DoesNotThrow(() => tradeBalance.Calculate(trade, target, originator));
             Assert.That(target.GoodWill[originator], Is.EqualTo(0));
+        }
+        
+        [Test]
+        public void Decide_1()
+        {
+            // Given
+            var algorithmService = new AlgorithmService();
+            var tradeTarget = new Tribe("A");
+            var tradeOriginator = new Tribe("B");
+            var trade = new Trade(InventoryItems.Stone, 2, InventoryItems.Wood, 2, tradeTarget.Name, tradeOriginator.Name);
+            
+            tradeOriginator.PointTable = new Dictionary<(InventoryItems, Tribe), int>
+            {
+                [(InventoryItems.Wood, tradeOriginator)] = 10,
+                [(InventoryItems.Wood, tradeTarget)] = -5,
+
+                [(InventoryItems.Lenses, tradeOriginator)] = 10,
+                [(InventoryItems.Lenses, tradeTarget)] = 5,
+
+                [(InventoryItems.Clay, tradeOriginator)] = 10,
+                [(InventoryItems.Clay, tradeTarget)] = 0,
+
+                [(InventoryItems.Gold, tradeOriginator)] = 10,
+                [(InventoryItems.Gold, tradeTarget)] = 5,
+
+                [(InventoryItems.Steel, tradeOriginator)] = 10,
+                [(InventoryItems.Steel, tradeTarget)] = 0,
+
+                [(InventoryItems.Insulation, tradeOriginator)] = 10,
+                [(InventoryItems.Insulation, tradeTarget)] = 5,
+
+                [(InventoryItems.Fertilizer, tradeOriginator)] = 10,
+                [(InventoryItems.Fertilizer, tradeTarget)] = 0,
+
+                [(InventoryItems.Stone, tradeOriginator)] = 10,
+                [(InventoryItems.Stone, tradeTarget)] = 0,
+            };
+
+            tradeTarget.PointTable = new Dictionary<(InventoryItems, Tribe), int>
+            {
+                [(InventoryItems.Wood, tradeOriginator)] = 0,
+                [(InventoryItems.Wood, tradeTarget)] = 10,
+
+                [(InventoryItems.Lenses, tradeOriginator)] = -5,
+                [(InventoryItems.Lenses, tradeTarget)] = 10,
+
+                [(InventoryItems.Clay, tradeOriginator)] = 5,
+                [(InventoryItems.Clay, tradeTarget)] = 10,
+
+                [(InventoryItems.Gold, tradeOriginator)] = 5,
+                [(InventoryItems.Gold, tradeTarget)] = 10,
+
+                [(InventoryItems.Steel, tradeOriginator)] = 0,
+                [(InventoryItems.Steel, tradeTarget)] = 10,
+
+                [(InventoryItems.Insulation, tradeOriginator)] = 5,
+                [(InventoryItems.Insulation, tradeTarget)] = 10,
+
+                [(InventoryItems.Fertilizer, tradeOriginator)] = 0,
+                [(InventoryItems.Fertilizer, tradeTarget)] = 10,
+
+                [(InventoryItems.Stone, tradeOriginator)] = 0,
+                [(InventoryItems.Stone, tradeTarget)] = 10,
+            };
+            // When & Then
+            algorithmService.Decide(trade, tradeOriginator, tradeTarget);
+            algorithmService.AlgorithmDecision += (sender, args) =>
+            {
+                Assert.That(args.issuesWithTrade, Is.Empty);
+                Assert.That(args.counterOffer?.originName, Is.EqualTo(trade.targetName));
+                Assert.That(args.counterOffer?.targetName, Is.EqualTo(trade.originName));
+            };
         }
     }
 }
