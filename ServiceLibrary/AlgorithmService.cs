@@ -36,7 +36,7 @@ namespace ServiceLibrary
         public void Decide(Trade trade,Tribe originator, Tribe targetCpu)
         {
             int startGoodwill = targetCpu.GoodWill[originator];
-            List<OfferDeclinedException> exceptions = [];
+            List<OfferDeclinedException> exceptions = new();
             
             //Original Decisions
             ExecuteAndCatch<SelfBuildException>(() => _selfBuild.Calculate(trade, targetCpu), exceptions);
@@ -60,7 +60,7 @@ namespace ServiceLibrary
             {
                 try
                 {
-                    Trade counterOffer = CreateCounterTrade(trade, originator, targetCpu, exceptions);
+                    Trade counterOffer = CreateCounterTrade(trade, targetCpu, originator, exceptions);
                     algoArgs = new AlgorithmDecisionEventArgs(exceptions, false, counterOffer);   
                 } catch (OfferDeclinedException e)
                 {
