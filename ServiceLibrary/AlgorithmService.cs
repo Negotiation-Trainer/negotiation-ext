@@ -86,33 +86,33 @@ namespace ServiceLibrary
 
         private Trade CreateCounterTrade(Trade trade, Tribe originator, Tribe targetCpu, List<OfferDeclinedException> exceptions)
         {
-
+            var counterOfferTrade = trade;
             if (exceptions.OfType<SelfBuildException>().Any()) //selfbuild
             {
-                trade = _selfBuild.CalculateCounter(trade, targetCpu);
+                counterOfferTrade = _selfBuild.CalculateCounter(trade, targetCpu);
             }
 
             if (exceptions.OfType<BuildEffectException>().Any()) //buildeffect
             {
-                trade =_buildEffect.CalculateCounter(trade, targetCpu, originator);
+                counterOfferTrade =_buildEffect.CalculateCounter(trade, targetCpu, originator);
             }
 
             if (exceptions.OfType<UsefulnessException>().Any()) //usefulness
             {
-                trade =_usefulness.CalculateCounter(trade, targetCpu);
+                counterOfferTrade =_usefulness.CalculateCounter(trade, targetCpu);
             }
 
             if (exceptions.OfType<TradeBalanceException>().Any()) //trade balance
             {
-                trade =_tradeBalance.CalculateCounter(trade);
+                counterOfferTrade =_tradeBalance.CalculateCounter(trade);
             }
             
-            if (targetCpu.Inventory.GetInventoryAmount(trade.RequestedItem) < trade.RequestedAmount) //trade not possible
+            if (targetCpu.Inventory.GetInventoryAmount(counterOfferTrade.RequestedItem) < counterOfferTrade.RequestedAmount) //trade not possible
             {
-                throw new InsufficientResourcesException(trade, targetCpu.Inventory.GetInventoryAmount(trade.RequestedItem) - trade.RequestedAmount, "I do not have enough resources to complete the trade");
+                throw new InsufficientResourcesException(counterOfferTrade, targetCpu.Inventory.GetInventoryAmount(trade.RequestedItem) - trade.RequestedAmount, "I do not have enough resources to complete the trade");
             }
 
-            return trade;
+            return counterOfferTrade;
         }
 
         private bool TradePossible(Trade trade, Tribe originator, Tribe targetCpu)
