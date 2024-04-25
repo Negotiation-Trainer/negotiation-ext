@@ -91,7 +91,7 @@ namespace ServiceLibrary
             {
                 try
                 {
-                    Trade counterOffer = CreateCounterTrade(trade, targetCpu, originator, exceptions);
+                    Trade counterOffer = CreateCounterTrade(trade, originator, targetCpu, exceptions);
                     algoArgs = new AlgorithmDecisionEventArgs(exceptions, false, counterOffer);
                 }
                 catch (OfferDeclinedException e)
