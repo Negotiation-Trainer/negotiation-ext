@@ -12,6 +12,7 @@ namespace ServiceLibrary
 {
     public class AlgorithmService
     {
+        public bool EnableRandomizedDecisions { get; set; } = true;
         public event EventHandler<AlgorithmDecisionEventArgs>? AlgorithmDecision;
 
         private readonly float _selfBuildRandomChance = 0.1f;
@@ -54,29 +55,31 @@ namespace ServiceLibrary
                 exceptions);
 
             //Randomise Decisions
-            ExecuteAndCatch<SelfBuildException>(() =>
-            {
-                if (_randomness.Calculate(_selfBuildRandomChance))
-                    throw new SelfBuildException(trade, "I Want to build the build myself.");
-            }, exceptions);
+            if (EnableRandomizedDecisions) {
+                ExecuteAndCatch<SelfBuildException>(() =>
+                {
+                    if (_randomness.Calculate(_selfBuildRandomChance))
+                        throw new SelfBuildException(trade, "I Want to build the build myself.");
+                }, exceptions);
 
-            ExecuteAndCatch<BuildEffectException>(() =>
-            {
-                if (_randomness.Calculate(_buildEffectRandomChance))
-                    throw new BuildEffectException(trade, "This trade has a negative effect on my tribe.");
-            }, exceptions);
+                ExecuteAndCatch<BuildEffectException>(() =>
+                {
+                    if (_randomness.Calculate(_buildEffectRandomChance))
+                        throw new BuildEffectException(trade, "This trade has a negative effect on my tribe.");
+                }, exceptions);
 
-            ExecuteAndCatch<UsefulnessException>(() =>
-            {
-                if (_randomness.Calculate(_usefulnessRandomChance))
-                    throw new UsefulnessException(trade, "This trade is not useful for me.");
-            }, exceptions);
+                ExecuteAndCatch<UsefulnessException>(() =>
+                {
+                    if (_randomness.Calculate(_usefulnessRandomChance))
+                        throw new UsefulnessException(trade, "This trade is not useful for me.");
+                }, exceptions);
 
-            ExecuteAndCatch<TradeBalanceException>(() =>
-            {
-                if (_randomness.Calculate(_tradeBalanceRandomChance))
-                    throw new TradeBalanceException(trade, startGoodwill, "Trade is not balanced.");
-            }, exceptions);
+                ExecuteAndCatch<TradeBalanceException>(() =>
+                {
+                    if (_randomness.Calculate(_tradeBalanceRandomChance))
+                        throw new TradeBalanceException(trade, startGoodwill, "Trade is not balanced.");
+                }, exceptions);
+            }
 
             AlgorithmDecisionEventArgs algoArgs;
 
