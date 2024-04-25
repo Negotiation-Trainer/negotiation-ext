@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using ModelLibrary;
 using ModelLibrary.Exceptions;
 
@@ -37,7 +39,13 @@ namespace ServiceLibrary.Algorithm
         
         public Trade CalculateCounter(Trade trade, Tribe target, Tribe originator)
         {
-            foreach (InventoryItems resource in Enum.GetValues(typeof(InventoryItems)))
+            InventoryItems[] excludedItems = { trade.OfferedItem };
+            List<InventoryItems> resources = Enum.GetValues(typeof(InventoryItems))
+                .Cast<InventoryItems>()
+                .Where(item => !excludedItems.Contains(item))
+                .ToList();
+            
+            foreach (InventoryItems resource in resources)
             {
                 var newTrade = new Trade(resource, trade.RequestedAmount, trade.OfferedItem, trade.OfferedAmount, trade.targetName, trade.originName);
 
