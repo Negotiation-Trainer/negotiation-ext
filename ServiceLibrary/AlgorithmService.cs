@@ -149,6 +149,8 @@ namespace ServiceLibrary
                     "I do not have enough resources to complete the trade");
             }
 
+            counterOfferTrade = new Trade(counterOfferTrade.OfferedItem, counterOfferTrade.OfferedAmount, counterOfferTrade.RequestedItem, counterOfferTrade.RequestedAmount, counterOfferTrade.originName, counterOfferTrade.targetName);
+            
             return counterOfferTrade;
         }
 
