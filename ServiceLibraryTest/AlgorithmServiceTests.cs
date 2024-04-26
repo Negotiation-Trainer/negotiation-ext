@@ -240,7 +240,7 @@ namespace ServiceLibraryTest
             _tradeOriginator.Inventory.AddToInventory(InventoryItems.Stone, 2);
         
             _tradeTarget.Inventory.AddToInventory(InventoryItems.Wood, 4);
-            _tradeTarget.Inventory.AddToInventory(InventoryItems.Lenses, 2);
+            _tradeTarget.Inventory.AddToInventory(InventoryItems.Lenses, 3);
             _tradeTarget.Inventory.AddToInventory(InventoryItems.Clay, 4);
             _tradeTarget.Inventory.AddToInventory(InventoryItems.Gold, 6);
             _tradeTarget.Inventory.AddToInventory(InventoryItems.Steel, 5);
