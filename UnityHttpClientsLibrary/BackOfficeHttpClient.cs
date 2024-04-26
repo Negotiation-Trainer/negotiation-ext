@@ -20,7 +20,7 @@ public class BackOfficeHttpClient: AbstractHttpClient
     public BackOfficeHttpClient(string baseUrl, string sessionToken) : base(baseUrl)
     {
         // Add the session token to the headers
-        _headers.Add("token", sessionToken);
+        _headers.Add("Authorization", sessionToken);
     }
 
     /// <summary>
