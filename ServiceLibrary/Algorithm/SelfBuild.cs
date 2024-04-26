@@ -1,32 +1,59 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using ModelLibrary;
+using ModelLibrary.Exceptions;
 
 namespace ServiceLibrary.Algorithm
 {
     public class SelfBuild
     {
-        public int SelfBuildThreshold { get; set; }
+        private int SelfBuildThreshold { get; }
         private readonly Random _random;
         public SelfBuild(Random random)
         {
             SelfBuildThreshold = 5;
             _random = random;
         }
-        public bool Calculate(Trade trade, Tribe target)
+        public void Calculate(Trade trade, Tribe target)
         {
-            if (target.Inventory.GetInventoryAmount(trade.RequestedItem) == SelfBuildThreshold) return (_random.NextDouble() > 0.5f);
-            else return target.Inventory.GetInventoryAmount(trade.RequestedItem) < SelfBuildThreshold;
+            
+            var amountInInventory = target.Inventory.GetInventoryAmount(trade.RequestedItem);
+
+            if (amountInInventory > SelfBuildThreshold)
+            {
+                throw new SelfBuildException(trade, "I Want to build the build myself.");
+            }
+
+            if (amountInInventory == SelfBuildThreshold && _random.NextDouble() > 0.5f)
+            {
+                throw new SelfBuildException(trade, "I Want to build the build myself.");
+            }
         }
 
         public Trade CalculateCounter(Trade trade, Tribe target)
         {
-            foreach (InventoryItems resource in Enum.GetValues(typeof(InventoryItems)))
+            InventoryItems[] excludedItems = { trade.OfferedItem };
+            List<InventoryItems> resources = Enum.GetValues(typeof(InventoryItems))
+                .Cast<InventoryItems>()
+                .Where(item => !excludedItems.Contains(item))
+                .ToList();
+            foreach (InventoryItems resource in resources)
             {
-                var newTrade = new Trade(resource, trade.RequestedAmount, trade.OfferedItem, trade.OfferedAmount);
-                if (Calculate(newTrade, target)) return newTrade;
+                var newTrade = new Trade(resource, trade.RequestedAmount, trade.OfferedItem, trade.OfferedAmount, trade.targetName, trade.originName);
+                try
+                {
+                    Calculate(newTrade, target);
+                    return newTrade;
+                } catch (SelfBuildException)
+                {
+                    //Ignore
+                }
             }
 
-            return trade;
+            throw new SelfBuildException(trade, "I Want to build the build myself.");
         }
     }
+
+   
 }

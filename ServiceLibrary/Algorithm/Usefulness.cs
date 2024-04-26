@@ -1,32 +1,49 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using ModelLibrary;
+using ModelLibrary.Exceptions;
 
 namespace ServiceLibrary.Algorithm
 {
-    public class Usefulness
+    public class Usefulness(Random random)
     {
-        private readonly Random _random;
-
-        public Usefulness(Random random)
+        public void Calculate(Trade trade, Tribe target)
         {
-            _random = random;
-        }
-        public bool Calculate(Trade trade, Tribe target)
-        {
-            if (target.Inventory.GetInventoryAmount(trade.OfferedItem) + trade.OfferedAmount > 5) return true;
-            if (target.Inventory.GetInventoryAmount(trade.OfferedItem) + trade.OfferedAmount == 5) return _random.NextDouble() > 0.5f;
-            return false;
+            var amountInInventory = target.Inventory.GetInventoryAmount(trade.OfferedItem);
+            
+            switch (amountInInventory + trade.OfferedAmount)
+            {
+                case < 5:
+                    throw new UsefulnessException(trade, "This trade is not useful for me.");
+                case 5 when random.NextDouble() > 0.5f:
+                    throw new UsefulnessException(trade, "This trade is not useful for me.");
+            }
         }
         
         public Trade CalculateCounter(Trade trade, Tribe target)
         {
-            foreach (InventoryItems resource in Enum.GetValues(typeof(InventoryItems)))
+            InventoryItems[] excludedItems = { trade.RequestedItem };
+            List<InventoryItems> resources = Enum.GetValues(typeof(InventoryItems))
+                .Cast<InventoryItems>()
+                .Where(item => !excludedItems.Contains(item))
+                .ToList();
+            
+            foreach (InventoryItems resource in resources)
             {
-                var newTrade = new Trade(trade.RequestedItem, trade.RequestedAmount, resource, trade.OfferedAmount);
-                if (Calculate(newTrade, target)) return newTrade;
+                var newTrade = new Trade(trade.RequestedItem, trade.RequestedAmount, resource, trade.OfferedAmount, trade.targetName, trade.originName);
+
+                try
+                {
+                    Calculate(newTrade, target);
+                    return newTrade;
+                } catch (UsefulnessException)
+                {
+                    //Ignore
+                }
             }
 
-            return trade;
+            throw new UsefulnessException(trade, "This trade is not useful for me.");
         }
     }
 }

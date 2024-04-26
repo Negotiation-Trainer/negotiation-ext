@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using ModelLibrary;
+using ModelLibrary.Exceptions;
 
 namespace ServiceLibrary.Algorithm
 {
@@ -13,7 +14,7 @@ namespace ServiceLibrary.Algorithm
             _random = random;
         }
         
-        public bool Calculate(Trade trade, Tribe target, Tribe originator)
+        public void Calculate(Trade trade, Tribe target, Tribe originator)
         {
             if (!target.GoodWill.Keys.Contains(originator))
             {
@@ -21,24 +22,22 @@ namespace ServiceLibrary.Algorithm
             }
             int goodWill = target.GoodWill[originator];
             
-            if(trade.OfferedAmount + goodWill < trade.RequestedAmount) return false;
+            if(trade.OfferedAmount + goodWill < trade.RequestedAmount) throw new TradeBalanceException(trade, goodWill,"Trade is not balanced.");
             if (trade.OfferedAmount + goodWill == trade.RequestedAmount)
             {
                 target.GoodWill[originator] = 0;
-                return true;
+                return;
             }
             int advantage = trade.OfferedAmount + goodWill - trade.RequestedAmount;
             target.GoodWill[originator] = advantage;
-            return true;
         }
         
-        public Trade CalculateCounter(Trade trade, Tribe target, Tribe originator)
+        public Trade CalculateCounter(Trade trade)
         {
-            if (_random.NextDouble() > 0.5f)
-            {
-                return new Trade(trade.RequestedItem, trade.OfferedAmount, trade.OfferedItem, trade.OfferedAmount);
-            }
-            return new Trade(trade.RequestedItem, trade.RequestedAmount, trade.OfferedItem, trade.RequestedAmount);
+            return _random.NextDouble() > 0.5f ? 
+                new Trade(trade.RequestedItem, trade.OfferedAmount, trade.OfferedItem, trade.OfferedAmount, trade.targetName, trade.originName) 
+                : new Trade(trade.RequestedItem, trade.RequestedAmount, trade.OfferedItem, trade.RequestedAmount, trade.targetName, trade.originName);
+            
         }
     }
 }
