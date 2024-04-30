@@ -16,5 +16,10 @@ namespace ServiceLibrary.Algorithm
         {
             return (_random.NextDouble() < changeChance);
         }
+
+        public int CalculateAmount(int minimum, int maximum)
+        {
+            return _random.Next(minimum, maximum);
+        }
     }
 }

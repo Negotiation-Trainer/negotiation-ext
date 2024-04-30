@@ -36,6 +36,26 @@ namespace ServiceLibrary
             _tradeBalance = new TradeBalance(random);
         }
 
+        public Trade CreateNewTrade(Tribe originator)
+        {
+            var originatorInventory = originator.Inventory;
+            
+            var resources = Enum.GetValues(typeof(InventoryItems)).Cast<InventoryItems>().ToList();
+            var requestItems = resources.Where(item => originatorInventory.GetInventoryAmount(item) >= 5).ToList();
+            var offerItems = resources.Where(item =>
+                    originatorInventory.GetInventoryAmount(item) > 0 &&
+                    originatorInventory.GetInventoryAmount(item) < 5)
+                .ToList();
+            
+            var requestedItem = requestItems[new Random().Next(requestItems.Count)];
+            var offeredItem = offerItems[new Random().Next(offerItems.Count)];
+
+            var requestedAmount = _randomness.CalculateAmount(1, originatorInventory.GetInventoryAmount(requestedItem));
+            var offeredAmount = _randomness.CalculateAmount(1, originatorInventory.GetInventoryAmount(offeredItem));
+            
+            return new Trade(requestedItem, requestedAmount, offeredItem, offeredAmount);
+        }
+
         public void Decide(Trade trade, Tribe originator, Tribe targetCpu)
         {
             if (!targetCpu.GoodWill.Keys.Contains(originator))
@@ -149,7 +169,7 @@ namespace ServiceLibrary
                     "I do not have enough resources to complete the trade");
             }
 
-            counterOfferTrade = new Trade(counterOfferTrade.OfferedItem, counterOfferTrade.OfferedAmount, counterOfferTrade.RequestedItem, counterOfferTrade.RequestedAmount, counterOfferTrade.originName, counterOfferTrade.targetName);
+            counterOfferTrade = new Trade(counterOfferTrade.OfferedItem, counterOfferTrade.OfferedAmount, counterOfferTrade.RequestedItem, counterOfferTrade.RequestedAmount);
             
             return counterOfferTrade;
         }

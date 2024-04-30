@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using ModelLibrary;
 using ModelLibrary.Exceptions;
 using ServiceLibrary;
@@ -53,7 +54,7 @@ namespace ServiceLibraryTest
         {
             //Given
             SelfBuild selfBuild = new SelfBuild(_random);
-            Trade trade = new Trade(InventoryItems.Wood,3,InventoryItems.Stone,3, _tradeTarget.Name, _tradeOriginator.Name);
+            Trade trade = new Trade(InventoryItems.Wood,3,InventoryItems.Stone,3);
             
             //When
             _tradeTarget.Inventory.AddToInventory(InventoryItems.Wood,8);
@@ -132,7 +133,7 @@ namespace ServiceLibraryTest
         {
             //Given
             Usefulness usefulness = new Usefulness(_random);
-            Trade trade = new Trade(InventoryItems.Wood,1,InventoryItems.Stone,1, _tradeTarget.Name, _tradeOriginator.Name);
+            Trade trade = new Trade(InventoryItems.Wood,1,InventoryItems.Stone,1);
             
             //When
             _tradeTarget.Inventory.AddToInventory(InventoryItems.Stone,3);
@@ -148,7 +149,7 @@ namespace ServiceLibraryTest
             TradeBalance tradeBalance = new TradeBalance(_random);
             _tradeOriginator.GoodWill.Add(_tradeTarget, 0);
             _tradeTarget.GoodWill.Add(_tradeOriginator, 0);
-            Trade trade = new Trade(InventoryItems.Wood,1,InventoryItems.Stone,2, _tradeTarget.Name, _tradeOriginator.Name);
+            Trade trade = new Trade(InventoryItems.Wood,1,InventoryItems.Stone,2);
             
             //When & Then
             Assert.DoesNotThrow(() => tradeBalance.Calculate(trade,_tradeTarget,_tradeOriginator));
@@ -228,6 +229,25 @@ namespace ServiceLibraryTest
             algorithmService.Decide(trade, _tradeOriginator, _tradeTarget);
         }
         
+        [Test, TestCaseSource(nameof(TestCasesForCreateNewTradeMethod))]
+        public void CreateNewTrade_WhenCalled_ReturnsTrade(Dictionary<InventoryItems, int> list)
+        {
+            // Given
+            var algorithmService = new AlgorithmService() {EnableRandomizedDecisions = false};
+            foreach (var item in list)
+            {
+                _tradeOriginator.Inventory.AddToInventory(item.Key, item.Value);
+            }
+
+            // When
+            var result = algorithmService.CreateNewTrade(_tradeOriginator);
+
+            // Then
+            Assert.That(result, Is.TypeOf<Trade>());
+            Assert.That(result.OfferedItem, Is.EqualTo(list.Keys.First()));
+            Assert.That(result.RequestedItem, Is.EqualTo(list.Keys.Last()));
+        }
+        
         private void FillInventory()
         {
             _tradeOriginator.Inventory.AddToInventory(InventoryItems.Wood, 6);
@@ -305,6 +325,38 @@ namespace ServiceLibraryTest
                 [(InventoryItems.Stone, _tradeTarget)] = 10,
             };
         }
+
+        public static TestCaseData[] TestCasesForCreateNewTradeMethod
+        {
+            get
+            {
+                var array = new[]
+                {
+                    new TestCaseData(
+                        new Dictionary<InventoryItems, int>
+                        {
+                            { InventoryItems.Clay, 2 }, // Offered
+                            { InventoryItems.Wood, 6 } // Requested
+                        }
+                    ),
+                    new TestCaseData(
+                        new Dictionary<InventoryItems, int>
+                        {
+                            { InventoryItems.Steel, 4 }, // Offered
+                            { InventoryItems.Gold, 5 } // Requested
+                        }),
+                    new TestCaseData(
+                        new Dictionary<InventoryItems, int>
+                        {
+                            { InventoryItems.Insulation, 4 }, // Offered
+                            { InventoryItems.Stone, 7 } // Requested
+                        })
+                };
+                
+                return array;
+            }
+        }
+        
         public static TestCaseData[] TestCasesForDecideMethod
         {
             get

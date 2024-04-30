@@ -35,8 +35,8 @@ namespace ServiceLibrary.Algorithm
         public Trade CalculateCounter(Trade trade)
         {
             return _random.NextDouble() > 0.5f ? 
-                new Trade(trade.RequestedItem, trade.OfferedAmount, trade.OfferedItem, trade.OfferedAmount, trade.targetName, trade.originName) 
-                : new Trade(trade.RequestedItem, trade.RequestedAmount, trade.OfferedItem, trade.RequestedAmount, trade.targetName, trade.originName);
+                new Trade(trade.RequestedItem, trade.OfferedAmount, trade.OfferedItem, trade.OfferedAmount) 
+                : new Trade(trade.RequestedItem, trade.RequestedAmount, trade.OfferedItem, trade.RequestedAmount);
             
         }
     }
