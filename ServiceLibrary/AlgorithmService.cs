@@ -36,24 +36,24 @@ namespace ServiceLibrary
             _tradeBalance = new TradeBalance(random);
         }
 
-        public Trade CreateNewTrade(Tribe originator)
+        public Trade CreateNewTrade(Tribe originator, Tribe target)
         {
             var originatorInventory = originator.Inventory;
             
             var resources = Enum.GetValues(typeof(InventoryItems)).Cast<InventoryItems>().ToList();
-            var requestItems = resources.Where(item => originatorInventory.GetInventoryAmount(item) >= 5).ToList();
-            var offerItems = resources.Where(item =>
+            List<InventoryItems> requestItems = resources.Where(item => originatorInventory.GetInventoryAmount(item) >= 5).ToList();
+            List<InventoryItems> offerItems = resources.Where(item =>
                     originatorInventory.GetInventoryAmount(item) > 0 &&
                     originatorInventory.GetInventoryAmount(item) < 5)
                 .ToList();
             
-            var requestedItem = requestItems[new Random().Next(requestItems.Count)];
-            var offeredItem = offerItems[new Random().Next(offerItems.Count)];
+            var requestedItem = requestItems[_randomness.CalculateAmount(0, requestItems.Count)];
+            var offeredItem = offerItems[_randomness.CalculateAmount(0, offerItems.Count)];
 
             var requestedAmount = _randomness.CalculateAmount(1, originatorInventory.GetInventoryAmount(requestedItem));
             var offeredAmount = _randomness.CalculateAmount(1, originatorInventory.GetInventoryAmount(offeredItem));
             
-            return new Trade(requestedItem, requestedAmount, offeredItem, offeredAmount);
+            return new Trade(requestedItem, requestedAmount, offeredItem, offeredAmount, originator.Name, target.Name);
         }
 
         public void Decide(Trade trade, Tribe originator, Tribe targetCpu)
@@ -169,7 +169,7 @@ namespace ServiceLibrary
                     "I do not have enough resources to complete the trade");
             }
 
-            counterOfferTrade = new Trade(counterOfferTrade.OfferedItem, counterOfferTrade.OfferedAmount, counterOfferTrade.RequestedItem, counterOfferTrade.RequestedAmount);
+            counterOfferTrade = new Trade(counterOfferTrade.OfferedItem, counterOfferTrade.OfferedAmount, counterOfferTrade.RequestedItem, counterOfferTrade.RequestedAmount, trade.originName, trade.targetName);
             
             return counterOfferTrade;
         }

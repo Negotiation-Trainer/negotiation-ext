@@ -31,7 +31,7 @@ namespace ServiceLibrary.Algorithm
             
             foreach (InventoryItems resource in resources)
             {
-                var newTrade = new Trade(trade.RequestedItem, trade.RequestedAmount, resource, trade.OfferedAmount);
+                var newTrade = new Trade(trade.RequestedItem, trade.RequestedAmount, resource, trade.OfferedAmount, target.Name, trade.originName);
 
                 try
                 {

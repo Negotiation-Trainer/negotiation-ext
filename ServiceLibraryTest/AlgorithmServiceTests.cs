@@ -54,7 +54,7 @@ namespace ServiceLibraryTest
         {
             //Given
             SelfBuild selfBuild = new SelfBuild(_random);
-            Trade trade = new Trade(InventoryItems.Wood,3,InventoryItems.Stone,3);
+            Trade trade = new Trade(InventoryItems.Wood,3,InventoryItems.Stone,3, _tradeTarget.Name, _tradeOriginator.Name);
             
             //When
             _tradeTarget.Inventory.AddToInventory(InventoryItems.Wood,8);
@@ -133,7 +133,7 @@ namespace ServiceLibraryTest
         {
             //Given
             Usefulness usefulness = new Usefulness(_random);
-            Trade trade = new Trade(InventoryItems.Wood,1,InventoryItems.Stone,1);
+            Trade trade = new Trade(InventoryItems.Wood,1,InventoryItems.Stone,1, _tradeTarget.Name, _tradeOriginator.Name);
             
             //When
             _tradeTarget.Inventory.AddToInventory(InventoryItems.Stone,3);
@@ -149,7 +149,7 @@ namespace ServiceLibraryTest
             TradeBalance tradeBalance = new TradeBalance(_random);
             _tradeOriginator.GoodWill.Add(_tradeTarget, 0);
             _tradeTarget.GoodWill.Add(_tradeOriginator, 0);
-            Trade trade = new Trade(InventoryItems.Wood,1,InventoryItems.Stone,2);
+            Trade trade = new Trade(InventoryItems.Wood,1,InventoryItems.Stone,2, _tradeTarget.Name, _tradeOriginator.Name);
             
             //When & Then
             Assert.DoesNotThrow(() => tradeBalance.Calculate(trade,_tradeTarget,_tradeOriginator));
@@ -240,7 +240,7 @@ namespace ServiceLibraryTest
             }
 
             // When
-            var result = algorithmService.CreateNewTrade(_tradeOriginator);
+            var result = algorithmService.CreateNewTrade(_tradeOriginator, _tradeTarget);
 
             // Then
             Assert.That(result, Is.TypeOf<Trade>());
