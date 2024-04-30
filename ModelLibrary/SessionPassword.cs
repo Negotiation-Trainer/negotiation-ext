@@ -1,6 +1,6 @@
 namespace ModelLibrary;
 
-public class SessionPassword(string sessionPassword)
+public class SessionPassword(string sessPassword)
 {
-    private string _sessionPassword = sessionPassword;
+    public string sessionPassword = sessPassword;
 }
