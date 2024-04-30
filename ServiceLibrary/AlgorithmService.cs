@@ -47,6 +47,8 @@ namespace ServiceLibrary
                     originatorInventory.GetInventoryAmount(item) < 5)
                 .ToList();
             
+            if (requestItems.Count == 0 && offerItems.Count == 0) throw new OfferDeclinedException(null, "I do not have enough resources to trade.");
+            
             var requestedItem = requestItems[_randomness.CalculateAmount(0, requestItems.Count)];
             var offeredItem = offerItems[_randomness.CalculateAmount(0, offerItems.Count)];
 
