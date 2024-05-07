@@ -26,6 +26,7 @@ jobs:
           run: |
             mkdir dlls
             find ServiceLibrary/bin/Debug/netstandard2.1 -name "*.dll" -exec cp {} dlls \;
+            rm dlls/UnityEngine.dll || true
         - uses: actions/upload-artifact@v4
           with:
             name: ext-build
