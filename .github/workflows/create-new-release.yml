@@ -76,12 +76,12 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: ext-build
-          path: build
+          path: extention-dlls
       
       # Zip the build
       - name: Zip build
         run: |
-          zip -r Connors-Paradise-Extention-Release-${{ env.RELEASE_NAME }}.zip build
+          zip -r Connors-Paradise-Extention-Release-${{ env.RELEASE_NAME }}.zip extention-dlls
 
       # Release
       - name: Release
