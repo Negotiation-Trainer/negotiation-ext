@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>netstandard2.1</TargetFramework>
+        <TargetFramework>net8.0</TargetFramework>
         <Nullable>enable</Nullable>
         <LangVersion>latest</LangVersion>
     </PropertyGroup>
@@ -16,6 +16,11 @@
 
     <ItemGroup>
         <Using Include="NUnit.Framework"/>
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\ModelLibrary\ModelLibrary.csproj" />
+      <ProjectReference Include="..\ServiceLibrary\ServiceLibrary.csproj" />
     </ItemGroup>
 
 </Project>

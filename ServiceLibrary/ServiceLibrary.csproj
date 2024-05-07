@@ -1,13 +1,18 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>netstandard2.1</TargetFramework>
+        <TargetFrameworks>netstandard2.1;net8.0;</TargetFrameworks>
         <Nullable>enable</Nullable>
         <LangVersion>latest</LangVersion>
     </PropertyGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\ModelLibrary\ModelLibrary.csproj" />
+      <ProjectReference Include="..\UnityHttpClientsLibrary\UnityHttpClientsLibrary.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     </ItemGroup>
 
 </Project>

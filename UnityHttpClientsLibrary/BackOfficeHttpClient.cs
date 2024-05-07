@@ -1,25 +1,68 @@
 using System.Collections.Generic;
-using System.Linq;
+using ModelLibrary;
 
 namespace UnityHttpClients;
 
+/// <summary>
+/// HTTP client for the back office.
+/// This class is responsible for making HTTP requests to the back office API.
+/// </summary>
 public class BackOfficeHttpClient: AbstractHttpClient
 {
+    // Headers to be sent with each request
     private Dictionary<string, string> _headers = new();
-    
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="BackOfficeHttpClient"/> class.
+    /// </summary>
+    /// <param name="baseUrl">The base URL of the API. Do not include a trailing slash.</param>
+    /// <param name="sessionToken">The session token for authentication.</param>
     public BackOfficeHttpClient(string baseUrl, string sessionToken) : base(baseUrl)
     {
-        _headers.Add("token", sessionToken);
+        // Add the session token to the headers
+        _headers.Add("Authorization", sessionToken);
     }
 
-    public string Chat(string prompt, Dictionary<string, string> extraHeaders)
+    /// <summary>
+    /// Sends a POST request to accept a trade deal.
+    /// </summary>
+    /// <param name="speakerStyle">The style in which the speaker should respond.</param>
+    /// <param name="tradeData">The data of the trade deal.</param>
+    /// <param name="reasonToDecline">The reason to decline the trade deal.</param>
+    /// <returns>A string response from the POST request.</returns>
+    public string Accept(string speakerStyle, Trade tradeData, string reasonToDecline)
     {
-        
-       // Merge the two header dictonaries
-       var mergedHeaders = _headers.Concat(extraHeaders).ToDictionary(x => x.Key, x => x.Value);
-       
-       string path = $"chat?prompt={prompt}";
-       
-       return Get(path, mergedHeaders);
+        string path = $"chat/accept-deal?speakerStyle={speakerStyle}&reasonToDecline={reasonToDecline}";
+
+        // Send the POST request and return the response
+        return Post(path, _headers, tradeData);
+    }
+
+    /// <summary>
+    /// Sends a POST request to decline a trade deal.
+    /// </summary>
+    /// <param name="speakerStyle">The style in which the speaker should respond.</param>
+    /// <param name="tradeData">The data of the trade deal.</param>
+    /// <param name="reasonToDecline">The reason to decline the trade deal.</param>
+    /// <returns>A string response from the POST request.</returns>
+    public string Decline(string speakerStyle, Trade tradeData, string reasonToDecline)
+    {
+        string path = $"chat/reject-deal?speakerStyle={speakerStyle}&reasonToDecline={reasonToDecline}";
+
+        // Send the POST request and return the response
+        return Post(path, _headers, tradeData);
+    }
+
+    /// <summary>
+    /// Converts a user's text input to a Trade object.
+    /// </summary>
+    /// <param name="userTextInput">The user's text input.</param>
+    /// <returns>A Trade object that represents the user's text input.</returns>
+    public string ConvertToTrade(string userTextInput)
+    {
+        string path = "chat/convert-to-trade";
+
+        // Send the POST request and get the response
+        return Post(path, _headers, new InputPromptBody(userTextInput));
     }
 }
