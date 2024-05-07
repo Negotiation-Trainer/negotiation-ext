@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using ModelLibrary;
 using ModelLibrary.Exceptions;
 using ServiceLibrary;
@@ -228,6 +229,25 @@ namespace ServiceLibraryTest
             algorithmService.Decide(trade, _tradeOriginator, _tradeTarget);
         }
         
+        [Test, TestCaseSource(nameof(TestCasesForCreateNewTradeMethod))]
+        public void CreateNewTrade_WhenCalled_ReturnsTrade(Dictionary<InventoryItems, int> list)
+        {
+            // Given
+            var algorithmService = new AlgorithmService() {EnableRandomizedDecisions = false};
+            foreach (var item in list)
+            {
+                _tradeOriginator.Inventory.AddToInventory(item.Key, item.Value);
+            }
+
+            // When
+            var result = algorithmService.CreateNewTrade(_tradeOriginator, _tradeTarget);
+
+            // Then
+            Assert.That(result, Is.TypeOf<Trade>());
+            Assert.That(result.OfferedItem, Is.EqualTo(list.Keys.First()));
+            Assert.That(result.RequestedItem, Is.EqualTo(list.Keys.Last()));
+        }
+        
         private void FillInventory()
         {
             _tradeOriginator.Inventory.AddToInventory(InventoryItems.Wood, 6);
@@ -305,6 +325,38 @@ namespace ServiceLibraryTest
                 [(InventoryItems.Stone, _tradeTarget)] = 10,
             };
         }
+
+        public static TestCaseData[] TestCasesForCreateNewTradeMethod
+        {
+            get
+            {
+                var array = new[]
+                {
+                    new TestCaseData(
+                        new Dictionary<InventoryItems, int>
+                        {
+                            { InventoryItems.Clay, 2 }, // Offered
+                            { InventoryItems.Wood, 6 } // Requested
+                        }
+                    ),
+                    new TestCaseData(
+                        new Dictionary<InventoryItems, int>
+                        {
+                            { InventoryItems.Steel, 4 }, // Offered
+                            { InventoryItems.Gold, 5 } // Requested
+                        }),
+                    new TestCaseData(
+                        new Dictionary<InventoryItems, int>
+                        {
+                            { InventoryItems.Insulation, 4 }, // Offered
+                            { InventoryItems.Stone, 7 } // Requested
+                        })
+                };
+                
+                return array;
+            }
+        }
+        
         public static TestCaseData[] TestCasesForDecideMethod
         {
             get
