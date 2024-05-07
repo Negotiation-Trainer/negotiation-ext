@@ -15,17 +15,21 @@ jobs:
         - name: Setup .NET
           uses: actions/setup-dotnet@v4
           with:
-            dotnet-version: '3.1.x'
+            dotnet-version: '8'
         - name: Restore dependencies
           run: dotnet restore
         - name: Build
           run: dotnet build --no-restore
         - name: Test
           run: dotnet test --no-build --verbosity normal
+        - name: Copy DLL files
+          run: |
+            mkdir dlls
+            find ServiceLibrary/bin/Debug/netstandard2.1 -name "*.dll" -exec cp {} dlls \;
         - uses: actions/upload-artifact@v4
           with:
             name: ext-build
-            path: ServiceLibrary/bin/Debug/netstandard2.1
+            path: dlls
 
     CreateNewRelease:
       needs: build
@@ -76,9 +80,7 @@ jobs:
       # Zip the build
       - name: Zip build
         run: |
-          pushd build
-          zip -r ../../Connors-Paradise-Extention-Release-${{ env.RELEASE_NAME }}.zip .
-          popd
+          zip -r Connors-Paradise-Extention-Release-${{ env.RELEASE_NAME }}.zip build
 
       # Release
       - name: Release
