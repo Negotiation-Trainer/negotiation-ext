@@ -99,10 +99,10 @@ public class BackOfficeHttpClient: AbstractHttpClient
     
     public ChatMessage AcceptDeal(string response)
     {
-        // // Convert the JSON response to a ChatMessage object
+        // Convert the JSON response to a ChatMessage object
         ChatMessage? message = JsonUtility.FromJson<ChatMessage>(response);
         
-        // // If the conversion failed, throw an exception
+        // If the conversion failed, throw an exception
         if (message == null)
         {
             throw new UserInputException("Could not convert the user input to a trade deal.");
