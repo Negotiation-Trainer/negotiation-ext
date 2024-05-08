@@ -14,10 +14,5 @@ namespace ModelLibrary
         [Newtonsoft.Json.JsonConverter(typeof(StringEnumConverter))] 
         public InventoryItems OfferedItem { get; private set; } = offeredItem;
         public int OfferedAmount { get; private set; } = offeredAmount;
-        
-        public string ToJson()
-        {
-            return $"{{\"targetName\":\"{targetName}\",\"originName\":\"{originName}\",\"requestedItem\":\"{RequestedItem}\",\"requestedAmount\":{RequestedAmount},\"offeredItem\":\"{OfferedItem}\",\"offeredAmount\":{OfferedAmount}}}";
-        }
     }
 }

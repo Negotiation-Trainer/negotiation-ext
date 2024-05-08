@@ -12,11 +12,14 @@ namespace ServiceLibrary
 {
     public class AlgorithmService
     {
+        public bool EnableRandomizedDecisions { get; set; } = true;
+        public event EventHandler<AlgorithmDecisionEventArgs>? AlgorithmDecision;
+
         private readonly float _selfBuildRandomChance = 0.1f;
         private readonly float _buildEffectRandomChance = 0.1f;
         private readonly float _usefulnessRandomChance = 0.1f;
         private readonly float _tradeBalanceRandomChance = 0.1f;
-        
+
         private readonly SelfBuild _selfBuild;
         private readonly Randomness _randomness;
         private readonly BuildEffect _buildEffect;
@@ -33,22 +36,72 @@ namespace ServiceLibrary
             _tradeBalance = new TradeBalance(random);
         }
 
-        public void Decide(Trade trade,Tribe originator, Tribe targetCpu)
+        public Trade CreateNewTrade(Tribe originator, Tribe target)
         {
-            int startGoodwill = targetCpu.GoodWill[originator];
-            List<OfferDeclinedException> exceptions = [];
+            var originatorInventory = originator.Inventory;
             
+            var resources = Enum.GetValues(typeof(InventoryItems)).Cast<InventoryItems>().ToList();
+            List<InventoryItems> requestItems = resources.Where(item => originatorInventory.GetInventoryAmount(item) >= 5).ToList();
+            List<InventoryItems> offerItems = resources.Where(item =>
+                    originatorInventory.GetInventoryAmount(item) > 0 &&
+                    originatorInventory.GetInventoryAmount(item) < 5)
+                .ToList();
+            
+            if (requestItems.Count == 0 && offerItems.Count == 0) throw new OfferDeclinedException(null, "I do not have enough resources to trade.");
+            
+            var requestedItem = requestItems[_randomness.CalculateAmount(0, requestItems.Count)];
+            var offeredItem = offerItems[_randomness.CalculateAmount(0, offerItems.Count)];
+
+            var requestedAmount = _randomness.CalculateAmount(1, originatorInventory.GetInventoryAmount(requestedItem));
+            var offeredAmount = _randomness.CalculateAmount(1, originatorInventory.GetInventoryAmount(offeredItem));
+            
+            return new Trade(requestedItem, requestedAmount, offeredItem, offeredAmount, originator.Name, target.Name);
+        }
+
+        public void Decide(Trade trade, Tribe originator, Tribe targetCpu)
+        {
+            if (!targetCpu.GoodWill.Keys.Contains(originator))
+            {
+                targetCpu.GoodWill[originator] = 0;
+            }
+
+            int startGoodwill = targetCpu.GoodWill[originator];
+            List<OfferDeclinedException> exceptions = new();
+
             //Original Decisions
             ExecuteAndCatch<SelfBuildException>(() => _selfBuild.Calculate(trade, targetCpu), exceptions);
-            ExecuteAndCatch<BuildEffectException>(() => _buildEffect.Calculate(trade, targetCpu, originator), exceptions);
+            ExecuteAndCatch<BuildEffectException>(() => _buildEffect.Calculate(trade, targetCpu, originator),
+                exceptions);
             ExecuteAndCatch<UsefulnessException>(() => _usefulness.Calculate(trade, targetCpu), exceptions);
-            ExecuteAndCatch<TradeBalanceException>(() => _tradeBalance.Calculate(trade, targetCpu, originator), exceptions);
-            
+            ExecuteAndCatch<TradeBalanceException>(() => _tradeBalance.Calculate(trade, targetCpu, originator),
+                exceptions);
+
             //Randomise Decisions
-            if (!_randomness.Calculate(_selfBuildRandomChance)) throw new SelfBuildException(trade, "I Want to build the build myself.");
-            if (_randomness.Calculate(_buildEffectRandomChance))  throw new BuildEffectException(trade, "This trade has a negative effect on my tribe.");
-            if(_randomness.Calculate(_usefulnessRandomChance)) throw new UsefulnessException(trade, "This trade is not useful for me.");
-            if (_randomness.Calculate(_tradeBalanceRandomChance)) throw new TradeBalanceException(trade, startGoodwill, "Trade is not balanced.");
+            if (EnableRandomizedDecisions) {
+                ExecuteAndCatch<SelfBuildException>(() =>
+                {
+                    if (_randomness.Calculate(_selfBuildRandomChance))
+                        throw new SelfBuildException(trade, "I Want to build the build myself.");
+                }, exceptions);
+
+                ExecuteAndCatch<BuildEffectException>(() =>
+                {
+                    if (_randomness.Calculate(_buildEffectRandomChance))
+                        throw new BuildEffectException(trade, "This trade has a negative effect on my tribe.");
+                }, exceptions);
+
+                ExecuteAndCatch<UsefulnessException>(() =>
+                {
+                    if (_randomness.Calculate(_usefulnessRandomChance))
+                        throw new UsefulnessException(trade, "This trade is not useful for me.");
+                }, exceptions);
+
+                ExecuteAndCatch<TradeBalanceException>(() =>
+                {
+                    if (_randomness.Calculate(_tradeBalanceRandomChance))
+                        throw new TradeBalanceException(trade, startGoodwill, "Trade is not balanced.");
+                }, exceptions);
+            }
 
             AlgorithmDecisionEventArgs algoArgs;
 
@@ -61,8 +114,9 @@ namespace ServiceLibrary
                 try
                 {
                     Trade counterOffer = CreateCounterTrade(trade, originator, targetCpu, exceptions);
-                    algoArgs = new AlgorithmDecisionEventArgs(exceptions, false, counterOffer);   
-                } catch (OfferDeclinedException e)
+                    algoArgs = new AlgorithmDecisionEventArgs(exceptions, false, counterOffer);
+                }
+                catch (OfferDeclinedException e)
                 {
                     exceptions.Add(e);
                     algoArgs = new AlgorithmDecisionEventArgs(exceptions, false, null);
@@ -71,8 +125,9 @@ namespace ServiceLibrary
 
             AlgorithmDecision?.Invoke(this, algoArgs);
         }
-        
-        private void ExecuteAndCatch<T>(Action action, List<OfferDeclinedException> exceptions) where T : OfferDeclinedException
+
+        private void ExecuteAndCatch<T>(Action action, List<OfferDeclinedException> exceptions)
+            where T : OfferDeclinedException
         {
             try
             {
@@ -84,51 +139,58 @@ namespace ServiceLibrary
             }
         }
 
-        private Trade CreateCounterTrade(Trade trade, Tribe originator, Tribe targetCpu, List<OfferDeclinedException> exceptions)
+        private Trade CreateCounterTrade(Trade trade, Tribe originator, Tribe targetCpu,
+            List<OfferDeclinedException> exceptions)
         {
-
+            var counterOfferTrade = trade;
             if (exceptions.OfType<SelfBuildException>().Any()) //selfbuild
             {
-                trade = _selfBuild.CalculateCounter(trade, targetCpu);
+                counterOfferTrade = _selfBuild.CalculateCounter(trade, targetCpu);
             }
 
             if (exceptions.OfType<BuildEffectException>().Any()) //buildeffect
             {
-                trade =_buildEffect.CalculateCounter(trade, targetCpu, originator);
+                counterOfferTrade = _buildEffect.CalculateCounter(trade, targetCpu, originator);
             }
 
             if (exceptions.OfType<UsefulnessException>().Any()) //usefulness
             {
-                trade =_usefulness.CalculateCounter(trade, targetCpu);
+                counterOfferTrade = _usefulness.CalculateCounter(trade, targetCpu);
             }
 
             if (exceptions.OfType<TradeBalanceException>().Any()) //trade balance
             {
-                trade =_tradeBalance.CalculateCounter(trade);
-            }
-            
-            if (targetCpu.Inventory.GetInventoryAmount(trade.RequestedItem) < trade.RequestedAmount) //trade not possible
-            {
-                throw new InsufficientResourcesException(trade, targetCpu.Inventory.GetInventoryAmount(trade.RequestedItem) - trade.RequestedAmount, "I do not have enough resources to complete the trade");
+                counterOfferTrade = _tradeBalance.CalculateCounter(trade);
             }
 
-            return trade;
+            if (targetCpu.Inventory.GetInventoryAmount(counterOfferTrade.RequestedItem) <
+                counterOfferTrade.RequestedAmount) //trade not possible
+            {
+                throw new InsufficientResourcesException(counterOfferTrade,
+                    targetCpu.Inventory.GetInventoryAmount(trade.RequestedItem) - trade.RequestedAmount,
+                    "I do not have enough resources to complete the trade");
+            }
+
+            counterOfferTrade = new Trade(counterOfferTrade.OfferedItem, counterOfferTrade.OfferedAmount, counterOfferTrade.RequestedItem, counterOfferTrade.RequestedAmount, trade.originName, trade.targetName);
+            
+            return counterOfferTrade;
         }
 
         private bool TradePossible(Trade trade, Tribe originator, Tribe targetCpu)
         {
-            return originator.Inventory.GetInventoryAmount(trade.OfferedItem) >= trade.OfferedAmount && 
+            return originator.Inventory.GetInventoryAmount(trade.OfferedItem) >= trade.OfferedAmount &&
                    targetCpu.Inventory.GetInventoryAmount(trade.RequestedItem) >= trade.RequestedAmount;
         }
-        
+
         //fire event with all decisions of the algorithm to be able to debug in unity
-        public class AlgorithmDecisionEventArgs(List<OfferDeclinedException> issues, bool tradeAccepted, Trade counterOffer) : EventArgs
+        public class AlgorithmDecisionEventArgs(
+            List<OfferDeclinedException> issues,
+            bool tradeAccepted,
+            Trade counterOffer) : EventArgs
         {
             public List<OfferDeclinedException> issuesWithTrade { get; } = issues;
             public bool tradeAccepted { get; } = tradeAccepted;
-            public Trade? coutnerOffer { get; } = counterOffer;
+            public Trade? counterOffer { get; } = counterOffer;
         }
-
-        public event EventHandler<AlgorithmDecisionEventArgs>? AlgorithmDecision;
     }
 }
