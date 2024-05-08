@@ -129,6 +129,6 @@ namespace ServiceLibrary
             public Trade? coutnerOffer { get; } = counterOffer;
         }
 
-        public static event EventHandler<AlgorithmDecisionEventArgs>? AlgorithmDecision;
+        public event EventHandler<AlgorithmDecisionEventArgs>? AlgorithmDecision;
     }
 }
