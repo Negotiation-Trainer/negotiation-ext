@@ -9,15 +9,16 @@ namespace ServiceLibraryTest
         {
             //Given
             string testText = "This is a sentence";
+            string tribeName = "1";
             DialogueGenerationService dialogueGenerationService = new DialogueGenerationService();
             
             //When
-            var result= dialogueGenerationService.SplitTextToDialogueMessages(testText, 1);
+            var result= dialogueGenerationService.SplitTextToDialogueMessages(testText, tribeName);
             
             //Then
             Assert.That(result.Length, Is.EqualTo(1));
             Assert.That(result[0].Message, Is.EqualTo(testText));
-            Assert.That(result[0].TribeId, Is.EqualTo(1));
+            Assert.That(result[0].TribeName, Is.EqualTo(tribeName));
         }
         
         [Test]
@@ -25,10 +26,11 @@ namespace ServiceLibraryTest
         {
             //Given
             string testText = "This is one sentence {nm} This is second sentence {nm} and a third sentence";
+            string tribeName = "1";
             DialogueGenerationService dialogueGenerationService = new DialogueGenerationService();
             
             //When
-            var result= dialogueGenerationService.SplitTextToDialogueMessages(testText, 1);
+            var result= dialogueGenerationService.SplitTextToDialogueMessages(testText, tribeName);
             
             //Then
             Assert.That(result.Length, Is.EqualTo(3));
