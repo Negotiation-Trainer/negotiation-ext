@@ -2,15 +2,9 @@ using ModelLibrary.Interfaces;
 
 namespace ModelLibrary
 {
-    public class DialogueMessage : IMessage
+    public class DialogueMessage(string tribeName, string message) : IMessage
     {
-        public int TribeId { get; private set; }
-        public string Message { get; private set; }
-
-        public DialogueMessage(int tribeId, string message)
-        {
-            TribeId = tribeId;
-            Message = message;
-        }
+        public string TribeName { get; private set; } = tribeName;
+        public string Message { get; private set; } = message;
     }
 }

@@ -1,8 +1,12 @@
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using UnityEngine.Networking;
 using Object = UnityEngine.Object;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace UnityHttpClients
 {
@@ -76,7 +80,7 @@ namespace UnityHttpClients
 
             return resultText;
         }
-        
+
         /// <summary>
         /// Executes a POST request to an API endpoint.
         /// </summary>
@@ -84,48 +88,36 @@ namespace UnityHttpClients
         /// <param name="pathUrl">The path to the API endpoint, e.g., /chat.</param>
         /// <param name="headers">The headers for the request, like auth headers, etc.</param>
         /// <param name="body">The body of the POST request.</param>
+        /// <param name="callback">The callback to invoke</param>
         /// <returns>A string response from the POST request.</returns>
-        protected string Post<T>(string pathUrl, Dictionary<string, string> headers, T body)
+        
+        protected IEnumerator Post<T>(string pathUrl, Dictionary<string, string> headers, T body, Action<string> callback)
         {
-            UnityWebRequest request = new UnityWebRequest($"{_baseUrl}/{pathUrl}", "POST");
-
-            // Add the body to the request when it is not null
-            if (body != null)
-            {
-                byte[] bodyRaw = Encoding.UTF8.GetBytes(JsonUtility.ToJson(body));
-                request.uploadHandler = new UploadHandlerRaw(bodyRaw);
-                request.downloadHandler = new DownloadHandlerBuffer();
-            }
+            string jsonBody = JsonConvert.SerializeObject(body, new StringEnumConverter());
             
-            request.SetRequestHeader("Content-Type", "application/json");
-            foreach (KeyValuePair<string, string> header in headers)
+            Debug.Log("Json body: " + jsonBody);
+        
+            using (UnityWebRequest wr = UnityWebRequest.Post($"{_baseUrl}/{pathUrl}", jsonBody, "application/json"))
             {
-                request.SetRequestHeader(header.Key, header.Value);
+                foreach (KeyValuePair<string, string> header in headers)
+                {
+                    wr.SetRequestHeader(header.Key, header.Value);
+                }
+            
+                yield return wr.SendWebRequest();
+            
+                if (wr.result != UnityWebRequest.Result.Success)
+                {
+                    Debug.LogError(wr.error);
+                    Debug.Log(wr.downloadHandler.text);
+                }
+                else
+                {
+                    Debug.Log(wr.downloadHandler.text);
+                }
+            
+                callback.Invoke(wr.downloadHandler.text);
             }
-
-            var operation = request.SendWebRequest();
-
-            // Wait for the request to complete
-            while (!operation.isDone) { }
-
-            string resultText;
-            switch (request.result)
-            {
-                case UnityWebRequest.Result.Success:
-                    resultText = request.downloadHandler.text;
-                    break;
-                case UnityWebRequest.Result.ConnectionError:
-                    resultText = $"Connection Error: {request.error}";
-                    break;
-                case UnityWebRequest.Result.ProtocolError:
-                    resultText = $"Protocol Error: {request.error}";
-                    break;
-                default:
-                    resultText = "Unknown error";
-                    break;
-            }
-
-            return resultText;
         }
     }
 }
