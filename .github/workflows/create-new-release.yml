@@ -1,0 +1,92 @@
+name: Test & Pre-Release
+
+on:
+  push:
+    tags:
+      - '*'
+            
+jobs:
+    build:
+        name: Build 
+        runs-on: ubuntu-latest
+    
+        steps:
+        - uses: actions/checkout@v4
+        - name: Setup .NET
+          uses: actions/setup-dotnet@v4
+          with:
+            dotnet-version: '8'
+        - name: Restore dependencies
+          run: dotnet restore
+        - name: Build
+          run: dotnet build --no-restore
+        - name: Test
+          run: dotnet test --no-build --verbosity normal
+        - name: Copy DLL files
+          run: |
+            mkdir dlls
+            find ServiceLibrary/bin/Debug/netstandard2.1 -name "*.dll" -exec cp {} dlls \;
+            rm dlls/UnityEngine.dll || true
+        - uses: actions/upload-artifact@v4
+          with:
+            name: ext-build
+            path: dlls
+
+    CreateNewRelease:
+      needs: build
+      name: Release
+      runs-on: ubuntu-latest
+      permissions:
+        contents: write
+      steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      # Validates if the tag is only numerical 
+      - name: Validate Tag Format
+        id: validate_tag
+        run: |
+          TAG=${GITHUB_REF#refs/tags/}
+          if [[ ! $TAG =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Invalid tag format: $TAG"
+            exit 1
+          fi
+
+          IFS='.' read -ra TAG_SEGMENTS <<< "$TAG"
+          for SEGMENT in "${TAG_SEGMENTS[@]}"; do
+            if ! [[ "$SEGMENT" =~ ^[0-9]+$ ]]; then
+              echo "Invalid tag format: $TAG"
+              exit 1
+            fi
+          done
+
+      # Extracts the version from the tag
+      - name: Extract Version from Tag
+        id: extract_version
+        run: echo "VERSION=$(echo ${GITHUB_REF#refs/tags/})" >> $GITHUB_ENV
+    
+      # Generates the release name
+      - name: Generate Release Name
+        id: generate_release_name
+        run: |
+            echo "RELEASE_NAME=v${{ env.VERSION }}" >> $GITHUB_ENV
+
+      # Download the WebGL build
+      - name: Download WebGL Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ext-build
+          path: Extension-dlls
+      
+      # Zip the build
+      - name: Zip build
+        run: |
+          zip -r Connors-Paradise-Extension-Release-${{ env.RELEASE_NAME }}.zip Extension-dlls
+
+      # Release
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: Connors-Paradise-Extension-Release-${{ env.RELEASE_NAME }}.zip
+          name: ${{ env.RELEASE_NAME}}
+          prerelease: true
