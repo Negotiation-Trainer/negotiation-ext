@@ -86,8 +86,7 @@ public class BackOfficeHttpClient: AbstractHttpClient
     public Trade ConvertToTrade(string response)
     {
         // Convert the JSON response to a Trade object
-        Trade? trade = JsonUtility.FromJson<Trade>(response);
-    
+        Trade? trade = JsonConvert.DeserializeObject<Trade>(response);
         // If the conversion failed, throw an exception
         if (trade == null)
         {
