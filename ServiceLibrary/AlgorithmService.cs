@@ -6,11 +6,11 @@ using ModelLibrary;
 using ModelLibrary.Exceptions;
 using ServiceLibrary.Algorithm;
 
-/*
- * This class is responsible for handling the algorithmic logic of the game.
- */
 namespace ServiceLibrary
 {
+    /// <summary>
+    /// This class contains all the logic needed to make decisions for the CPU tribes.
+    /// </summary>
     public class AlgorithmService
     {
         public bool EnableRandomizedDecisions { get; set; } = true;
