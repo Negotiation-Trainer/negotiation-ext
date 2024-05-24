@@ -58,6 +58,14 @@ public class BackOfficeHttpClient: AbstractHttpClient
         return Post(path, _headers, new InputPromptBody(userTextInput), callback);
     }
     
+    public IEnumerator ConvertToChat(string speakerStyle, Trade tradeData, Action<string> callback)
+    {
+        string path = $"chat/convert-to-chat?speakerStyle={speakerStyle}";
+
+        // Send the POST request and return the response
+        return Post(path, _headers, tradeData, callback);
+    }
+    
     /// <summary>
     /// Sends a POST request to accept a trade deal.
     /// </summary>
@@ -95,6 +103,22 @@ public class BackOfficeHttpClient: AbstractHttpClient
     
         return trade;
     }
+    
+    public ChatMessage TradeToChat(string response)
+    {
+        // Convert the JSON response to a ChatMessage object
+        ChatMessage? message = JsonUtility.FromJson<ChatMessage>(response);
+        
+        // If the conversion failed, throw an exception
+        if (message == null)
+        {
+            throw new UserInputException("Could not convert the user input to a trade deal.");
+        }
+        
+        // return ChatMessage;
+        return message;
+    }
+    
     
     public ChatMessage AcceptDeal(string response)
     {
