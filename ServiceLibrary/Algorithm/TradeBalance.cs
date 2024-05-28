@@ -14,6 +14,13 @@ namespace ServiceLibrary.Algorithm
             _random = random;
         }
         
+        /// <summary>
+        /// Add
+        /// </summary>
+        /// <param name="trade"></param>
+        /// <param name="target"></param>
+        /// <param name="originator"></param>
+        /// <exception cref="TradeBalanceException"></exception>
         public void Calculate(Trade trade, Tribe target, Tribe originator)
         {
             if (!target.GoodWill.Keys.Contains(originator))
@@ -32,6 +39,11 @@ namespace ServiceLibrary.Algorithm
             target.GoodWill[originator] = advantage;
         }
         
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="trade"></param>
+        /// <returns></returns>
         public Trade CalculateCounter(Trade trade)
         {
             return _random.NextDouble() > 0.5f ? 
