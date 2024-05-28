@@ -18,7 +18,7 @@ public class BackOfficeHttpClient: AbstractHttpClient
     private Dictionary<string, string> _headers = new();
 
     public string gamePassword { get; set; }
-
+    
     /// <summary>
     /// Initializes a new instance of the <see cref="BackOfficeHttpClient"/> class.
     /// </summary>
@@ -33,6 +33,8 @@ public class BackOfficeHttpClient: AbstractHttpClient
         this.gamePassword = gamePassword;
     }
 
+    #region HttpRequest Methods
+    
     public IEnumerator Authenticate(Action<string> callback)
     {
         string path = "authenticate";
@@ -74,9 +76,9 @@ public class BackOfficeHttpClient: AbstractHttpClient
     /// <param name="reasonToDecline">The reason to decline the trade deal.</param>
     /// <param name="callback">The callback func after completing</param>
     /// <returns>A string response from the POST request.</returns>
-    public IEnumerator Accept(string speakerStyle, Trade tradeData, string reasonToDecline, Action<string> callback)
+    public IEnumerator Accept(string speakerStyle, Trade tradeData, string reasonToAccept, Action<string> callback)
     {
-        string path = $"chat/accept-deal?speakerStyle={speakerStyle}&reason={reasonToDecline}";
+        string path = $"chat/accept-deal?speakerStyle={speakerStyle}&reason={reasonToAccept}";
         
         // Send the POST request and return the response
         return Post(path, _headers, tradeData, callback);
@@ -89,7 +91,17 @@ public class BackOfficeHttpClient: AbstractHttpClient
         // Send the POST request and return the response
         return Post(path, _headers, tradeData, callback);
     }
-    
+
+    public IEnumerator CounterOffer(string speakerStyle, Trade tradeData, string reasonToDecline, Action<string> callback)
+    {
+        string path = $"chat/counter-offer?speakerStyle={speakerStyle}&reason={reasonToDecline}";
+        
+        // Send the POST request and return the response
+        return Post(path, _headers, tradeData, callback);
+    }
+    #endregion
+
+    #region Call Back Methods
     
     public Trade ConvertToTrade(string response)
     {
@@ -123,7 +135,7 @@ public class BackOfficeHttpClient: AbstractHttpClient
     public ChatMessage AcceptDeal(string response)
     {
         // Convert the JSON response to a ChatMessage object
-        ChatMessage? message = JsonUtility.FromJson<ChatMessage>(response);
+        ChatMessage? message = JsonUtility.FromJson<ChatMessage>(response); 
         
         // If the conversion failed, throw an exception
         if (message == null)
@@ -138,7 +150,7 @@ public class BackOfficeHttpClient: AbstractHttpClient
     public ChatMessage RejectDeal(string response)
     {
 
-        // // Convert the JSON response to a ChatMessage object
+        // Convert the JSON response to a ChatMessage object
         ChatMessage? message = JsonUtility.FromJson<ChatMessage>(response);
         
         // If the conversion failed, throw an exception
@@ -150,4 +162,37 @@ public class BackOfficeHttpClient: AbstractHttpClient
         // return ChatMessage;
         return message;
     }
+
+    public ChatMessage CounterOffer(string response)
+    {
+        // Convert the JSON response to a ChatMessage object
+        ChatMessage? message = JsonUtility.FromJson<ChatMessage>(response);
+        
+        // If the conversion failed, throw an exception
+        if (message == null)
+        {
+            throw new UserInputException("Could not convert the user input to a trade deal.");
+        }
+        
+        // return ChatMessage;
+        return message;
+    }
+
+    //TODO: Proposed method to replace the above chat conversion methods
+    public ChatMessage ConvertResponseToChatMessage(string response)
+    {
+        // Convert the JSON response to a ChatMessage object
+        ChatMessage? message = JsonUtility.FromJson<ChatMessage>(response);
+        
+        // If the conversion failed, throw an exception
+        if (message == null)
+        {
+            throw new UserInputException("Could not convert the user input to a trade deal.");
+        }
+        
+        // return ChatMessage;
+        return message;
+    }
+    
+    #endregion
 }
