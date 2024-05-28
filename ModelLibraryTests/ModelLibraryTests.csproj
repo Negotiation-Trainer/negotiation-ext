@@ -4,6 +4,7 @@
         <TargetFramework>net8.0</TargetFramework>
         <Nullable>enable</Nullable>
         <LangVersion>latest</LangVersion>
+        <RootNamespace>ModelLibraryTest</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
@@ -19,8 +20,11 @@
     </ItemGroup>
 
     <ItemGroup>
+        <Using Include="NUnit.Framework"/>
+    </ItemGroup>
+
+    <ItemGroup>
       <ProjectReference Include="..\ModelLibrary\ModelLibrary.csproj" />
-      <ProjectReference Include="..\ServiceLibrary\ServiceLibrary.csproj" />
     </ItemGroup>
 
 </Project>
