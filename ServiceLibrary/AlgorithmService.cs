@@ -55,7 +55,7 @@ namespace ServiceLibrary
             var requestedAmount = _randomness.CalculateAmount(1, originatorInventory.GetInventoryAmount(requestedItem));
             var offeredAmount = _randomness.CalculateAmount(1, originatorInventory.GetInventoryAmount(offeredItem));
             
-            return new Trade(requestedItem, requestedAmount, offeredItem, offeredAmount, originator.Name, target.Name);
+            return new Trade(requestedItem, requestedAmount, offeredItem, offeredAmount, target.Name, originator.Name);
         }
 
         public void Decide(Trade trade, Tribe originator, Tribe targetCpu)
