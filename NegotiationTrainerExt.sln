@@ -6,9 +6,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServiceLibrary", "ServiceLi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModelLibrary", "ModelLibrary\ModelLibrary.csproj", "{5DD5FD2E-DEA1-4001-A279-663EAB0E2E57}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServiceLibraryTest", "ServiceLibraryTest\ServiceLibraryTest.csproj", "{BDB6D599-20EE-4A49-B632-595D39DA1D94}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServiceLibraryTests", "ServiceLibraryTests\ServiceLibraryTests.csproj", "{BDB6D599-20EE-4A49-B632-595D39DA1D94}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModelLibraryTest", "ModelLibraryTest\ModelLibraryTest.csproj", "{97F6FD95-564E-4743-8CAF-FEF31EAD2A9B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModelLibraryTests", "ModelLibraryTests\ModelLibraryTests.csproj", "{97F6FD95-564E-4743-8CAF-FEF31EAD2A9B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnityHttpClientsLibraryTests", "UnityHttpClientsLibraryTests\UnityHttpClientsLibraryTests.csproj", "{602354FD-FA12-4565-A474-019E9890CF6C}"
 EndProject

@@ -1,15 +1,16 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using ModelLibrary;
 using ModelLibrary.Exceptions;
 using ServiceLibrary.Algorithm;
 
-/*
- * This class is responsible for handling the algorithmic logic of the game.
- */
 namespace ServiceLibrary
 {
+    /// <summary>
+    /// This class contains all the logic needed to make decisions for the CPU tribes.
+    /// </summary>
     public class AlgorithmService
     {
         public bool EnableRandomizedDecisions { get; set; } = true;
@@ -36,6 +37,13 @@ namespace ServiceLibrary
             _tradeBalance = new TradeBalance(random);
         }
 
+        /// <summary>
+        /// Let the algorithm create a new trade between two tribes.
+        /// </summary>
+        /// <param name="originator">Originator of the trade</param>
+        /// <param name="target">Target of the trade</param>
+        /// <returns>Returns a trade created by the algorithm</returns>
+        /// <exception cref="OfferDeclinedException">When the originator had not enough resources a exception is trown</exception>
         public Trade CreateNewTrade(Tribe originator, Tribe target)
         {
             var originatorInventory = originator.Inventory;
@@ -55,9 +63,21 @@ namespace ServiceLibrary
             var requestedAmount = _randomness.CalculateAmount(1, originatorInventory.GetInventoryAmount(requestedItem));
             var offeredAmount = _randomness.CalculateAmount(1, originatorInventory.GetInventoryAmount(offeredItem));
             
+            Debug.WriteLine($"Trade created: {originator.Name} offers {offeredAmount} {offeredItem} for {requestedAmount} {requestedItem} from {target.Name}");
+            
             return new Trade(requestedItem, requestedAmount, offeredItem, offeredAmount, originator.Name, target.Name);
         }
 
+        /// <summary>
+        /// Decides if the Target accepts the trade proposed
+        /// </summary>
+        /// <param name="trade"></param>
+        /// <param name="originator">Originator of the trade</param>
+        /// <param name="targetCpu">Target CPU Tribe</param>
+        /// <exception cref="SelfBuildException">Thrown when the CPU rather builds the building itself.</exception>
+        /// <exception cref="BuildEffectException">Thrown when the CPU experiences a negative effect when the originator builds the building</exception>
+        /// <exception cref="UsefulnessException">Thrown when the CPU has no use for the offered item</exception>
+        /// <exception cref="TradeBalanceException">Thrown when the trade is out of balance in opinion of the CPU</exception>
         public void Decide(Trade trade, Tribe originator, Tribe targetCpu)
         {
             if (!targetCpu.GoodWill.Keys.Contains(originator))
@@ -126,6 +146,7 @@ namespace ServiceLibrary
             AlgorithmDecision?.Invoke(this, algoArgs);
         }
 
+        // Catch a specific exception and add it to the list of exceptions
         private void ExecuteAndCatch<T>(Action action, List<OfferDeclinedException> exceptions)
             where T : OfferDeclinedException
         {
@@ -139,6 +160,7 @@ namespace ServiceLibrary
             }
         }
 
+        // Creates a counteroffer, based on the issues found with the trade.
         private Trade CreateCounterTrade(Trade trade, Tribe originator, Tribe targetCpu,
             List<OfferDeclinedException> exceptions)
         {
@@ -176,6 +198,7 @@ namespace ServiceLibrary
             return counterOfferTrade;
         }
 
+        // Checks if the trade is possible, based on the inventory contents
         private bool TradePossible(Trade trade, Tribe originator, Tribe targetCpu)
         {
             return originator.Inventory.GetInventoryAmount(trade.OfferedItem) >= trade.OfferedAmount &&

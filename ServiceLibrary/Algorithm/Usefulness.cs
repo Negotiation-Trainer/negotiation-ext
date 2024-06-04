@@ -8,6 +8,12 @@ namespace ServiceLibrary.Algorithm
 {
     public class Usefulness(Random random)
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="trade"></param>
+        /// <param name="target"></param>
+        /// <exception cref="UsefulnessException"></exception>
         public void Calculate(Trade trade, Tribe target)
         {
             var amountInInventory = target.Inventory.GetInventoryAmount(trade.OfferedItem);
@@ -21,6 +27,13 @@ namespace ServiceLibrary.Algorithm
             }
         }
         
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="trade"></param>
+        /// <param name="target"></param>
+        /// <returns></returns>
+        /// <exception cref="UsefulnessException"></exception>
         public Trade CalculateCounter(Trade trade, Tribe target)
         {
             InventoryItems[] excludedItems = { trade.RequestedItem };
