@@ -63,9 +63,7 @@ namespace ServiceLibrary
             var requestedAmount = _randomness.CalculateAmount(1, originatorInventory.GetInventoryAmount(requestedItem));
             var offeredAmount = _randomness.CalculateAmount(1, originatorInventory.GetInventoryAmount(offeredItem));
             
-            Debug.WriteLine($"Trade created: {originator.Name} offers {offeredAmount} {offeredItem} for {requestedAmount} {requestedItem} from {target.Name}");
-            
-            return new Trade(requestedItem, requestedAmount, offeredItem, offeredAmount, originator.Name, target.Name);
+            return new Trade(requestedItem, requestedAmount, offeredItem, offeredAmount, target.Name, originator.Name);
         }
 
         /// <summary>
