@@ -34,24 +34,42 @@ public class BackOfficeHttpClient: AbstractHttpClient
     }
 
     #region HttpRequest Methods
-    
+    /// <summary>
+    /// Authenticated the player with a game password, and sets the session token for use when calling the back office.
+    /// </summary>
+    /// <param name="callback">The callback from the Http Call</param>
+    /// <returns>A Post request that does a callback to the given method</returns>
     public IEnumerator Authenticate(Action<string> callback)
     {
         string path = "authenticate";
         return Post(path, _headers, new SessionPassword(gamePassword), callback);
     }
     
+    /// <summary>
+    /// Sets the Session Token return from the authentication call
+    /// </summary>
+    /// <param name="tokenResponse">The string that was returned from the Http Call</param>
     public void SetToken(string tokenResponse)
     {
         TokenResponse response = JsonUtility.FromJson<TokenResponse>(tokenResponse);
         _headers.Add("Authorization", response.token);
     }
     
+    /// <summary>
+    /// Debug method to get the current auth token
+    /// </summary>
+    /// <returns>Current Authorization Header</returns>
     public string Debug_GetAuth()
     {
         return _headers["Authorization"];
     }
     
+    /// <summary>
+    /// Sends a POST request to the back office to convert the user input to a trade deal.
+    /// </summary>
+    /// <param name="userTextInput">The user input</param>
+    /// <param name="callback">The call back method</param>
+    /// <returns>A Post request that does a callback to the given method</returns>
     public IEnumerator ConvertToTrade(string userTextInput, Action<string> callback)
     {
         string path = "chat/convert-to-trade";
@@ -73,7 +91,7 @@ public class BackOfficeHttpClient: AbstractHttpClient
     /// </summary>
     /// <param name="speakerStyle">The style in which the speaker should respond.</param>
     /// <param name="tradeData">The data of the trade deal.</param>
-    /// <param name="reasonToDecline">The reason to decline the trade deal.</param>
+    /// <param name="reasonToDecline">The reason to decline the trade deal.</param> //TODO: Change this to reasonToAccept
     /// <param name="callback">The callback func after completing</param>
     /// <returns>A string response from the POST request.</returns>
     public IEnumerator Accept(string speakerStyle, Trade tradeData, string reasonToAccept, Action<string> callback)
@@ -84,6 +102,14 @@ public class BackOfficeHttpClient: AbstractHttpClient
         return Post(path, _headers, tradeData, callback);
     }
     
+    /// <summary>
+    /// Sends a POST request to reject a trade deal.
+    /// </summary>
+    /// <param name="speakerStyle">The style in which the speaker should respond.</param>
+    /// <param name="tradeData">The data of the trade deal.</param>
+    /// <param name="reasonToDecline">The reason to decline a trade deal</param>
+    /// <param name="callback"></param>
+    /// <returns></returns>
     public IEnumerator Reject(string speakerStyle, Trade tradeData, string reasonToDecline, Action<string> callback)
     {
         string path = $"chat/reject-deal?speakerStyle={speakerStyle}&reason={reasonToDecline}";
@@ -117,6 +143,7 @@ public class BackOfficeHttpClient: AbstractHttpClient
     }
     
     public ChatMessage TradeToChat(string response)
+
     {
         // Convert the JSON response to a ChatMessage object
         ChatMessage? message = JsonUtility.FromJson<ChatMessage>(response);
@@ -131,7 +158,12 @@ public class BackOfficeHttpClient: AbstractHttpClient
         return message;
     }
     
-    
+    /// <summary>
+    /// Converts the JSON string to a chat message object, when the user accepts a trade deal.
+    /// </summary>
+    /// <param name="response">JSON String from the Http Request</param>
+    /// <returns>The Chat Message in a ChatMessage object</returns>
+    /// <exception cref="UserInputException">Thrown when the message could not be converted</exception>
     public ChatMessage AcceptDeal(string response)
     {
         // Convert the JSON response to a ChatMessage object
@@ -147,6 +179,12 @@ public class BackOfficeHttpClient: AbstractHttpClient
         return message;
     }
     
+    /// <summary>
+    /// Converts the JSON string to a chat message object, when the user rejects a trade deal.
+    /// </summary>
+    /// <param name="response">JSON String from the http Request</param>
+    /// <returns>The Chat Message in a ChatMessage object</returns>
+    /// <exception cref="UserInputException">Thrown when the message could not be converted</exception>
     public ChatMessage RejectDeal(string response)
     {
 

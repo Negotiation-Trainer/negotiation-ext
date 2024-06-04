@@ -15,6 +15,13 @@ namespace ServiceLibrary.Algorithm
             SelfBuildThreshold = 5;
             _random = random;
         }
+        
+        /// <summary>
+        /// Calculates if the target tribe should build the requested building themselves.
+        /// </summary>
+        /// <param name="trade">The proposed trade</param>
+        /// <param name="target">The target tribe</param>
+        /// <exception cref="SelfBuildException">Thrown when the tribe is better off building it themselves</exception>
         public void Calculate(Trade trade, Tribe target)
         {
             
@@ -31,6 +38,13 @@ namespace ServiceLibrary.Algorithm
             }
         }
 
+        /// <summary>
+        /// Calculates the counter trade that the target tribe can make to the originator tribe.
+        /// </summary>
+        /// <param name="trade">The proposed trade</param>
+        /// <param name="target">The target tribe</param>
+        /// <returns>A new counter offer to the proposed trade</returns>
+        /// <exception cref="SelfBuildException">Thrown when Self build</exception>
         public Trade CalculateCounter(Trade trade, Tribe target)
         {
             InventoryItems[] excludedItems = { trade.OfferedItem };

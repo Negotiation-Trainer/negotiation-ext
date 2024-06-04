@@ -22,7 +22,7 @@ namespace ServiceLibraryTest
             _tradeTarget = new Tribe("B");
             
         }
-        // A Test behaves as an ordinary method
+        
         [Test]
         public void CalculateRandomness_HighRandomness_ReturnsTrue()
         {

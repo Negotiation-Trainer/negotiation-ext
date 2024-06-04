@@ -37,6 +37,14 @@ namespace ServiceLibrary.Algorithm
             }
         }
         
+        /// <summary>
+        /// Calculates the counter trade that the target tribe can make to the originator tribe.
+        /// </summary>
+        /// <param name="trade">Trade that was proposed but declined</param>
+        /// <param name="target">Target of the trade</param>
+        /// <param name="originator">originator of the trade</param>
+        /// <returns>A new counter offer to the proposed trade</returns>
+        /// <exception cref="BuildEffectException">Thrown when the build effect could not be fixed</exception>
         public Trade CalculateCounter(Trade trade, Tribe target, Tribe originator)
         {
             InventoryItems[] excludedItems = { trade.OfferedItem };
