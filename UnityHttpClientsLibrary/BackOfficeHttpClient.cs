@@ -63,6 +63,13 @@ public class BackOfficeHttpClient: AbstractHttpClient
     {
         return _headers["Authorization"];
     }
+
+    public IEnumerator GetGameConfig(Action<string> callback)
+    {
+        string path = "game-config";
+
+        return Post(path, _headers, new SessionPassword(gamePassword), callback);
+    }
     
     /// <summary>
     /// Sends a POST request to the back office to convert the user input to a trade deal.
@@ -140,6 +147,19 @@ public class BackOfficeHttpClient: AbstractHttpClient
         }
     
         return trade;
+    }
+    
+    public GameConfig ConfigToString(string response)
+    {
+        // Convert the JSON response to a Trade object
+        GameConfig? config = JsonConvert.DeserializeObject<GameConfig>(response);
+        // If the conversion failed, throw an exception
+        if (config == null)
+        {
+            throw new UserInputException("Could not convert the data to config");
+        }
+    
+        return config;
     }
     
     public ChatMessage TradeToChat(string response)
